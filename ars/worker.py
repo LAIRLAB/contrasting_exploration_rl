@@ -40,7 +40,6 @@ class Worker(object):
             total_reward += (reward - shift)
             if done:
                 break
-
         return total_reward, steps
 
     def do_rollouts(self, w_policy, num_rollouts=1, shift=0., evaluate=False):

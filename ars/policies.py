@@ -45,7 +45,7 @@ class LinearPolicy(Policy):
 
     def __init__(self, policy_params):
         Policy.__init__(self, policy_params)
-        self.weights = np.zeros((self.ac_dim, self.ob_dim), dtype = np.float64)
+        self.weights = np.random.randn(self.ac_dim, self.ob_dim) * 0.1
 
     def act(self, ob):
         ob = self.observation_filter(ob, update=self.update_filter)

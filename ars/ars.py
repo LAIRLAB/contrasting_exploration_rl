@@ -131,7 +131,7 @@ class ARSLearner(object):
                 logz.log_tabular("timesteps", self.timesteps)
                 logz.dump_tabular()
 
-                # get statistics from all workers
+            # get statistics from all workers
             for j in range(self.num_workers):
                 self.policy.observation_filter.update(ray.get(self.workers[j].get_filter.remote()))
             self.policy.observation_filter.stats_increment()
