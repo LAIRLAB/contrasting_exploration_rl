@@ -3,6 +3,7 @@ import numpy as np
 from exact.utils import *
 from ars.shared_noise import *
 from ars.policies import *
+from gym.utils import seeding
 
 
 @ray.remote
@@ -24,6 +25,7 @@ class Worker(object):
         self.delta_std = params['delta_std']
         self.rollout_length = params['rollout_length']
         self.seed = seed
+        self.np_random, _ = seeding.np_random(seed)
 
     def get_weights_plus_stats(self):
         return self.policy.get_weights_plus_stats()
@@ -77,10 +79,10 @@ class Worker(object):
                 delta = (self.delta_std * delta)
                 deltas_idx.append(idx)
 
-                sampled_t = np.random.uniform(low=0, high=self.rollout_length)
+                sampled_t = self.np_random.randint(low=0, high=self.rollout_length)
 
                 self.policy.update_filter = True
-
+                
                 # self.policy.update_weights(w_policy + delta)
                 pos_reward, pos_steps, pos_obs = self.rollout(shift=shift, sampled_t=sampled_t, noise=delta)
 
@@ -89,6 +91,9 @@ class Worker(object):
 
                 if not np.array_equal(pos_obs, neg_obs):
                     raise NotImplementedError('Only completely deterministic environments are handled')
+
+                if pos_obs is None or neg_obs is None:
+                    raise Exception('Observation not assigned')
 
                 steps += pos_steps + neg_steps
                 rollout_rewards.append([pos_reward, neg_reward])

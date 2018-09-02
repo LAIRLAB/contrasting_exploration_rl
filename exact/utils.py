@@ -25,11 +25,10 @@ def batched_weighted_sum_jacobian(weights, vecs, obs, batch_size):
     num_items_summed = 0
     for batch_weights, batch_vecs, batch_obs in zip(itergroups(weights, batch_size),
                                                     itergroups(vecs, batch_size),
-                                                    itergroups(obs, batc_size)):
-        assert len(batch_weights) == len(batch_vecs) == len(batch_obs) <= batch_size
-        total += np.dot(np.dot(np.asarray(batch_weights, dtype=np.float64),
-                               np.asarray(batch_vecs, dtype=np.float64)),
-                        np.asarray(batch_obs, dtype=np.float64))
+                                                    itergroups(obs, batch_size)):
+        assert len(batch_weights) == len(batch_vecs) == len(batch_obs) <= batch_size        
+        action_grad = (np.asarray(batch_weights, dtype=np.float64).reshape(-1, 1) * np.asarray(batch_vecs, dtype=np.float64))
+        total += np.dot(action_grad.T, np.asarray(batch_obs, dtype=np.float64)).sum(axis=0)        
         num_items_summed += len(batch_weights)
     return total, num_items_summed
 

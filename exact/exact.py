@@ -92,6 +92,7 @@ class ExActLearner(object):
             self.deltas_used = self.num_deltas
 
         idx = np.arange(max_rewards.size)[max_rewards >= np.percentile(max_rewards, 100 * (1 - self.deltas_used / self.num_deltas))]
+        
         deltas_idx = deltas_idx[idx]
         rollout_rewards = rollout_rewards[idx, :]
         obs = obs[idx, :]
@@ -100,7 +101,7 @@ class ExActLearner(object):
         rollout_rewards /= np.std(rollout_rewards)
 
         g_hat, count = batched_weighted_sum_jacobian(rollout_rewards[:, 0] - rollout_rewards[:, 1],
-                                                     (self.deltas.get(idx, self.w_policy.size) for idx in deltas_idx),
+                                                     (self.deltas.get(idx, self.action_size) for idx in deltas_idx),
                                                      obs,
                                                      batch_size=500)
 
@@ -109,6 +110,7 @@ class ExActLearner(object):
 
     def train_step(self):
         g_hat = self.aggregate_rollouts()
+        print('Gradient norm is', np.linalg.norm(g_hat))
         self.w_policy -= self.optimizer._compute_step(g_hat).reshape(self.w_policy.shape)
         return
 

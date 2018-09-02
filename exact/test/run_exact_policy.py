@@ -15,7 +15,7 @@ def main():
     parser.add_argument('--step_size', '-s', type=float, default=0.02)
     parser.add_argument('--delta_std', '-std', type=float, default=.03)
     parser.add_argument('--n_workers', '-e', type=int, default=18)
-    parser.add_argument('--rollout_length', '-r', type=int, default=1000)
+    parser.add_argument('--rollout_length', '-r', type=int, default=10)
     parser.add_argument('--shift', type=float, default=0)
     parser.add_argument('--seed', type=int, default=237)
     parser.add_argument('--policy_type', type=str, default='linear')
@@ -24,12 +24,11 @@ def main():
     parser.add_argument('--filter', type=str, default='NoFilter')
 
     # ray.init()
-    local_ip
     ray.init(redis_address="192.168.1.115:6379")
     
     args = parser.parse_args()
     params = vars(args)
-    run_ars(params)
+    run_exact(params)
 
 
 if __name__ == '__main__':
