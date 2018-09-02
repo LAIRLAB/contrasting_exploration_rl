@@ -1,0 +1,6 @@
+ray
+numpy
+matplotlib
+gym
+scipy
+jupyter
