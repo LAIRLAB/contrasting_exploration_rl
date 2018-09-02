@@ -98,8 +98,8 @@ class ARSLearner(object):
         rollout_rewards /= np.std(rollout_rewards)
 
         g_hat, count = batched_weighted_sum(rollout_rewards[:, 0] - rollout_rewards[:, 1],
-                                                  (self.deltas.get(idx, self.w_policy.size) for idx in deltas_idx),
-                                                  batch_size=500)
+                                            (self.deltas.get(idx, self.w_policy.size) for idx in deltas_idx),
+                                            batch_size=500)
 
         g_hat /= deltas_idx.size
         return g_hat

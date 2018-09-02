@@ -21,6 +21,7 @@ class Worker(object):
 
         self.delta_std = params['delta_std']
         self.rollout_length = params['rollout_length']
+        self.one_point = params['one_point']
 
     def get_weights_plus_stats(self):
         return self.policy.get_weights_plus_stats()
@@ -66,8 +67,12 @@ class Worker(object):
                 self.policy.update_weights(w_policy + delta)
                 pos_reward, pos_steps = self.rollout(shift=shift)
 
-                self.policy.update_weights(w_policy - delta)
-                neg_reward, neg_steps = self.rollout(shift=shift)
+                if not self.one_point:                    
+                    self.policy.update_weights(w_policy - delta)
+                    neg_reward, neg_steps = self.rollout(shift=shift)
+                else:
+                    neg_reward = 0.
+                    neg_steps = 0.
 
                 steps += pos_steps + neg_steps
                 rollout_rewards.append([pos_reward, neg_reward])

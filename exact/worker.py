@@ -24,6 +24,7 @@ class Worker(object):
 
         self.delta_std = params['delta_std']
         self.rollout_length = params['rollout_length']
+        self.one_point = params['one_point']
         self.seed = seed
         self.np_random, _ = seeding.np_random(seed)
 
@@ -87,7 +88,12 @@ class Worker(object):
                 pos_reward, pos_steps, pos_obs = self.rollout(shift=shift, sampled_t=sampled_t, noise=delta)
 
                 # self.policy.update_weights(w_policy - delta)
-                neg_reward, neg_steps, neg_obs = self.rollout(shift=shift, sampled_t=sampled_t, noise=-delta)
+                if not self.one_point:                    
+                    neg_reward, neg_steps, neg_obs = self.rollout(shift=shift, sampled_t=sampled_t, noise=-delta)
+                else:
+                    neg_reward = 0.
+                    neg_steps = 0.
+                    neg_obs = pos_obs.copy()
 
                 if not np.array_equal(pos_obs, neg_obs):
                     raise NotImplementedError('Only completely deterministic environments are handled')

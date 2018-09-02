@@ -22,9 +22,11 @@ def main():
     parser.add_argument('--dir_path', type=str, default='data')
     # for ARS V1 use filter = 'NoFilter'
     parser.add_argument('--filter', type=str, default='NoFilter')
+    parser.add_argument('--one_point', action='store_true')
 
     # ray.init()
-    ray.init(redis_address="192.168.1.115:6379")
+    # ray.init(redis_address="192.168.1.115:6379")
+    ray.init()
     
     args = parser.parse_args()
     params = vars(args)

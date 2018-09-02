@@ -22,6 +22,7 @@ def main():
     parser.add_argument('--dir_path', type=str, default='data')
     # for ARS V1 use filter = 'NoFilter'
     parser.add_argument('--filter', type=str, default='NoFilter')
+    parser.add_argument('--one_point', action='store_true')
 
     # local_ip = socket.gethostbyname(socket.gethostname())
     # ray.init(redis_address=local_ip+":6379")

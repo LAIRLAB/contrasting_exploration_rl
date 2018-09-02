@@ -110,7 +110,7 @@ class ExActLearner(object):
 
     def train_step(self):
         g_hat = self.aggregate_rollouts()
-        print('Gradient norm is', np.linalg.norm(g_hat))
+        # print('Gradient norm is', np.linalg.norm(g_hat))
         self.w_policy -= self.optimizer._compute_step(g_hat).reshape(self.w_policy.shape)
         return
 
