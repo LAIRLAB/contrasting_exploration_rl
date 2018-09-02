@@ -3,7 +3,7 @@ import ray
 import os
 import time
 import ars.logz as logz
-from ars.utils import *
+from exact.utils import *
 from ars.shared_noise import *
 from exact.worker import *
 from ars.policies import *
@@ -99,10 +99,10 @@ class ExActLearner(object):
 
         rollout_rewards /= np.std(rollout_rewards)
 
-        # TODO: Compute the correct gradient
-        g_hat, count = batched_weighted_sum(rollout_rewards[:, 0] - rollout_rewards[:, 1],
-                                            (self.deltas.get(idx, self.w_policy.size) for idx in deltas_idx),
-                                            batch_size=500)
+        g_hat, count = batched_weighted_sum_jacobian(rollout_rewards[:, 0] - rollout_rewards[:, 1],
+                                                     (self.deltas.get(idx, self.w_policy.size) for idx in deltas_idx),
+                                                     obs,
+                                                     batch_size=500)
 
         g_hat /= deltas_idx.size
         return g_hat

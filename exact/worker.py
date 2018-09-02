@@ -1,6 +1,6 @@
 import ray
 import numpy as np
-from ars.utils import *
+from exact.utils import *
 from ars.shared_noise import *
 from ars.policies import *
 
