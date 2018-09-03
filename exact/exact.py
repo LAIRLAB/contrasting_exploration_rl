@@ -13,8 +13,8 @@ import ars.optimizers as optimizers
 class ExActLearner(object):
 
     def __init__(self, policy_params, logdir, params):
-        logz.configure_output_dir(logdir)
-        logz.save_params(params)
+        # logz.configure_output_dir(logdir)
+        # logz.save_params(params)
 
         self.env = make_env(params, seed=params['seed'])
         self.is_lqr = params['env_name'] == 'LQR'
@@ -123,7 +123,7 @@ class ExActLearner(object):
         while self.timesteps < max_num_steps:            
             self.train_step()
 
-            if ((i+1) % 10 == 0):
+            if ((i+1) % 10 == 0) and not self.tuning:
 
                 rewards = self.aggregate_rollouts(num_rollouts=100, evaluate=True)
                 w = ray.get(self.workers[0].get_weights_plus_stats.remote())
@@ -163,7 +163,7 @@ class ExActLearner(object):
             # waiting for increment of all workers
             ray.get(increment_filters_ids)
             i += 1
-        return
+        return self.timesteps
 
     def close_to_optimal(self):
         if not self.is_lqr:
@@ -195,6 +195,4 @@ def run_exact(params):
                      logdir=logdir,
                      params=params)                     
         
-    ExAct.train(params['max_num_steps'])
-       
-    return
+    return ExAct.train(params['max_num_steps'])
