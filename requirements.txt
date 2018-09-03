@@ -4,4 +4,3 @@ matplotlib
 gym
 scipy
 jupyter
-pickle

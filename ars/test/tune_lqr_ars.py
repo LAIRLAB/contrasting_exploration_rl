@@ -35,13 +35,13 @@ def main():
     #num_directions = [1, 5, 10, 20, 50, 100]
     #num_top_directions = [1, 5, 10, 20, 50, 100]
     #perturbations = [1e-5, 5e-5, 1e-4, 5e-4, 1e-3, 5e-3, 1e-2]
-    stepsizes = [1e-4, 5e-4]
-    num_directions = [1, 5]
-    num_top_directions = [1, 5]
-    perturbations = [1e-4, 5e-4]
+    stepsizes = [1e-4, 5e-4, 1e-3]
+    num_directions = [1, 5, 10]
+    num_top_directions = [1, 5, 10]
+    perturbations = [1e-4, 5e-4, 1e-3]
 
-    #horizons = list(range(1, 11))
-    horizons = [5, 10]
+    horizons = list(range(1, 21, 2))
+    # horizons = [5, 10]
 
 
     initial_seed = 100
@@ -64,17 +64,19 @@ def main():
                     params['n_directions'] = nd
                     for ntd in num_top_directions:
                         if ntd > nd:
-                            result_table[c] = float('inf')
+                            result_table[c] = ray.put(float('inf'))
                             c += 1
                         else:
                             params['deltas_used'] = ntd
                             for p in perturbations:
                                 params['delta_std'] = p
-                                
-                                result_table[c] = ray.get(run_ars.remote(params))                                
+                                print('Seed: %d, Horizon: %d, Step Size: %f, Num directions: %d, Used directions: %d, Perturbation: %f' % (seed, h, s, nd, ntd, p))
+                                result_table[c] = run_ars.remote(params)
                                 c += 1
+                            result_table[prev_c:c] = ray.get(result_table[prev_c:c])
+                            prev_c = c
 
-    # print(ray.get(result_table[0]))
+
     result_table = np.array(result_table).reshape(len(tune_param_seed), len(horizons), len(stepsizes), len(num_directions), len(num_top_directions), len(perturbations))
     pickle.dump(result_table, open('data/ars_tuning.pkl', 'wb'))    
     
