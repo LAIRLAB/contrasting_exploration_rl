@@ -1,5 +1,5 @@
 import numpy as np
-from ars.ars import run_ars
+from exact.exact import run_exact
 import ray
 import argparse
 import pickle
@@ -70,14 +70,14 @@ def main():
                             for p in perturbations:
                                 params['delta_std'] = p
                                 print('Seed: %d, Horizon: %d, Step Size: %f, Num directions: %d, Used directions: %d, Perturbation: %f' % (seed, h, s, nd, ntd, p))
-                                result_table[c] = run_ars.remote(params)
+                                result_table[c] = run_exact.remote(params)
                                 c += 1
                             result_table[prev_c:c] = ray.get(result_table[prev_c:c])
                             prev_c = c
 
 
     result_table = np.array(result_table).reshape(len(tune_param_seed), len(horizons), len(stepsizes), len(num_directions), len(num_top_directions), len(perturbations))
-    pickle.dump(result_table, open('data/ars_tuning.pkl', 'wb'))    
+    pickle.dump(result_table, open('data/exact_tuning.pkl', 'wb'))    
     
 
 if __name__ == '__main__':
