@@ -9,13 +9,13 @@ from ars.policies import *
 class Worker(object):
     def __init__(self, seed, policy_params, deltas, params):
 
-        self.env = make_env(params, seed)
+        self.env = make_env(params, seed=params['seed'])  # NOTE: All envs should use the same seed for LQR
 
         self.deltas = SharedNoiseTable(deltas, seed=seed+7)
         self.policy_params = policy_params
 
         if policy_params['type'] == 'linear':
-            self.policy = LinearPolicy(policy_params)
+            self.policy = LinearPolicy(policy_params, seed=params['seed'])
         else:
             raise NotImplementedError
 

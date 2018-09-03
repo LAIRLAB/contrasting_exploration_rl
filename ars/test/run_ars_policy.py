@@ -23,6 +23,8 @@ def main():
     # for ARS V1 use filter = 'NoFilter'
     parser.add_argument('--filter', type=str, default='NoFilter')
     parser.add_argument('--one_point', action='store_true')
+    parser.add_argument('--tuning', action='store_true')
+    parser.add_argument('--max_num_steps', type=int, default=1e5)
 
     # local_ip = socket.gethostbyname(socket.gethostname())
     # ray.init(redis_address=local_ip+":6379")
@@ -30,7 +32,7 @@ def main():
     
     args = parser.parse_args()
     params = vars(args)
-    run_ars(params)
+    ray.get(run_ars.remote(params))
 
 
 if __name__ == '__main__':

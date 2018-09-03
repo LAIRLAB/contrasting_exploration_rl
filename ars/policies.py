@@ -43,9 +43,9 @@ class LinearPolicy(Policy):
     Linear policy class that computes action as <w, ob>. 
     """
 
-    def __init__(self, policy_params):
+    def __init__(self, policy_params, seed):
         Policy.__init__(self, policy_params)
-        self.weights = np.random.randn(self.ac_dim, self.ob_dim) * 0.1
+        self.weights = np.random.RandomState(seed).randn(self.ac_dim, self.ob_dim) * 0.1
 
     def act(self, ob):
         ob = self.observation_filter(ob, update=self.update_filter)

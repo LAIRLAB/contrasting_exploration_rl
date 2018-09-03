@@ -10,7 +10,7 @@ from gym.utils import seeding
 class Worker(object):
     def __init__(self, seed, policy_params, deltas, params):
 
-        self.env = make_env(params, seed)
+        self.env = make_env(params, seed=params['seed'])  # NOTE: Need to use the same env seed across all workers for LQR
 
         self.deltas = SharedNoiseTable(deltas, seed=seed+7)
         self.policy_params = policy_params
@@ -18,7 +18,7 @@ class Worker(object):
         self.ac_dim = self.env.action_space.shape[0]
 
         if policy_params['type'] == 'linear':
-            self.policy = LinearPolicy(policy_params)
+            self.policy = LinearPolicy(policy_params, seed=params['seed'])
         else:
             raise NotImplementedError
 
@@ -26,6 +26,7 @@ class Worker(object):
         self.rollout_length = params['rollout_length']
         self.one_point = params['one_point']
         self.seed = seed
+        self.params = params
         self.np_random, _ = seeding.np_random(seed)
 
     def get_weights_plus_stats(self):
@@ -75,6 +76,7 @@ class Worker(object):
                 reward, _, _ = self.rollout(rollout_length=self.rollout_length)
                 rollout_rewards.append(reward)
             else:
+                self.policy.update_weights(w_policy)
                 idx, delta = self.deltas.get_delta(self.ac_dim)
 
                 delta = (self.delta_std * delta)

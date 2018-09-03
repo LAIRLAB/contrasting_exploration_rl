@@ -15,14 +15,15 @@ class ARSLearner(object):
 
     def __init__(self, policy_params, logdir, params):
         
-        logz.configure_output_dir(logdir)
-        logz.save_params(params)
+        # logz.configure_output_dir(logdir)
+        # logz.save_params(params)
 
-        env = make_env(params, seed=params['seed'])
+        self.env = make_env(params, seed=params['seed'])
+        self.is_lqr = params['env_name'] == 'LQR'
 
         self.timesteps = 0
-        self.action_size = env.action_space.shape[0]
-        self.ob_size = env.observation_space.shape[0]
+        self.action_size = self.env.action_space.shape[0]
+        self.ob_size = self.env.observation_space.shape[0]
         self.num_deltas = params['n_directions']
         self.deltas_used = params['deltas_used']
         self.rollout_length = params['rollout_length']
@@ -34,6 +35,7 @@ class ARSLearner(object):
         self.max_past_avg_reward = float('-inf')
         self.num_episodes_used = float('inf')
         self.seed = params['seed']
+        self.tuning = params['tuning']
 
         deltas_id = create_shared_noise.remote()
         self.deltas = SharedNoiseTable(ray.get(deltas_id), seed=self.seed+3)
@@ -45,7 +47,7 @@ class ARSLearner(object):
                                       params) for i in range(self.num_workers)]
 
         if policy_params['type'] == 'linear':
-            self.policy = LinearPolicy(policy_params)
+            self.policy = LinearPolicy(policy_params, seed=params['seed'])
             self.w_policy = self.policy.get_weights()
         else:
             raise NotImplementedError
@@ -109,15 +111,17 @@ class ARSLearner(object):
         self.w_policy -= self.optimizer._compute_step(g_hat).reshape(self.w_policy.shape)
         return
 
-    def train(self, num_iter):
+    def train(self, max_num_steps):
         start = time.time()
-        for i in range(num_iter):
+        # for i in range(num_iter):
+        i = 0
+        while self.timesteps < max_num_steps:            
             self.train_step()
 
-            if ((i+1) % 10 == 0):
+            if ((i+1) % 10 == 0) and not self.tuning:
 
                 rewards = self.aggregate_rollouts(num_rollouts=100, evaluate=True)
-                w = ray.get(self.workers[0].get_weights_plus_stats.remote())
+                w = ray.get(self.workers[0].get_weights_plus_stats.remote())                
                 np.savez(self.logdir + '/lin_policy_plus', w)
 
                 # print(sorted(self.params.items()))
@@ -129,7 +133,15 @@ class ARSLearner(object):
                 logz.log_tabular("MaxRewardRollout", np.max(rewards))
                 logz.log_tabular("MinRewardRollout", np.min(rewards))
                 logz.log_tabular("timesteps", self.timesteps)
+                if self.is_lqr:
+                    cost = self.env.evaluate_policy(self.w_policy)
+                    logz.log_tabular("optimal cost", self.env.optimal_cost)
+                    logz.log_tabular("cost", cost)
                 logz.dump_tabular()
+
+            # Check for convergence for tuning purposes
+            if self.tuning and self.close_to_optimal() and self.is_lqr:
+                return self.timesteps
 
             # get statistics from all workers
             for j in range(self.num_workers):
@@ -147,10 +159,15 @@ class ARSLearner(object):
             increment_filters_ids = [worker.stats_increment.remote() for worker in self.workers]
             # waiting for increment of all workers
             ray.get(increment_filters_ids)
+            i += 1
         return
-    
 
+    def close_to_optimal(self):
+        if np.abs(self.env.evaluate_policy(self.w_policy) - self.env.optimal_cost) / self.env.optimal_cost < 0.05:
+            return True
+        return False
 
+@ray.remote
 def run_ars(params):
 
     dir_path = params['dir_path']
@@ -174,6 +191,6 @@ def run_ars(params):
                      logdir=logdir,
                      params=params)                     
         
-    ARS.train(params['n_iter'])
+    ARS.train(params['max_num_steps'])
        
     return
