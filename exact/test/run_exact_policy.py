@@ -24,13 +24,15 @@ def main():
     parser.add_argument('--filter', type=str, default='NoFilter')
     parser.add_argument('--one_point', action='store_true')
     parser.add_argument('--tuning', action='store_true')
+    parser.add_argument('--max_num_steps', type=int, default=1e5)
+    
     # ray.init()
     # ray.init(redis_address="192.168.1.115:6379")
     ray.init()
     
     args = parser.parse_args()
     params = vars(args)
-    run_exact(params)
+    ray.get(run_exact.remote(params))
 
 
 if __name__ == '__main__':

@@ -116,9 +116,11 @@ class ExActLearner(object):
         self.w_policy -= self.optimizer._compute_step(g_hat).reshape(self.w_policy.shape)
         return
 
-    def train(self, num_iter):
+    def train(self, max_num_steps):
         start = time.time()
-        for i in range(num_iter):
+        # for i in range(num_iter):
+        i = 0
+        while self.timesteps < max_num_steps:            
             self.train_step()
 
             if ((i+1) % 10 == 0):
@@ -160,6 +162,7 @@ class ExActLearner(object):
             increment_filters_ids = [worker.stats_increment.remote() for worker in self.workers]
             # waiting for increment of all workers
             ray.get(increment_filters_ids)
+            i += 1
         return
 
     def close_to_optimal(self):
@@ -169,6 +172,7 @@ class ExActLearner(object):
             return True
         return False
 
+@ray.remote
 def run_exact(params):
     dir_path = params['dir_path']
 
@@ -191,6 +195,6 @@ def run_exact(params):
                      logdir=logdir,
                      params=params)                     
         
-    ExAct.train(params['n_iter'])
+    ExAct.train(params['max_num_steps'])
        
     return

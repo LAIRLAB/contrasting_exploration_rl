@@ -160,7 +160,7 @@ class ARSLearner(object):
             # waiting for increment of all workers
             ray.get(increment_filters_ids)
             i += 1
-        return
+        return self.timesteps
 
     def close_to_optimal(self):
         if np.abs(self.env.evaluate_policy(self.w_policy) - self.env.optimal_cost) / self.env.optimal_cost < 0.05:
@@ -191,6 +191,6 @@ def run_ars(params):
                      logdir=logdir,
                      params=params)                     
         
-    ARS.train(params['max_num_steps'])
+    num_steps = ARS.train(params['max_num_steps'])
        
-    return
+    return num_steps
