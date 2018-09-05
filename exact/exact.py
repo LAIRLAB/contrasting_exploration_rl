@@ -144,7 +144,7 @@ class ExActLearner(object):
                 logz.dump_tabular()                    
 
             # Check for convergence for tuning purposes
-            if self.tuning and self.close_to_optimal() and self.is_lqr:
+            if self.close_to_optimal() and self.is_lqr:
                 return self.timesteps
             # get statistics from all workers
             for j in range(self.num_workers):

@@ -53,6 +53,7 @@ def main():
 
     prev_c = 0
     c = 0
+    infeasible = False
     for seed in tune_param_seed:
         params['seed'] = seed
         for h in horizons:
@@ -63,16 +64,18 @@ def main():
                     params['n_directions'] = nd
                     for ntd in num_top_directions:
                         if ntd > nd:
-                            result_table[c] = ray.put(float('inf'))
-                            c += 1
-                        else:
+                            infeasible = True
                             params['deltas_used'] = ntd
                             for p in perturbations:
                                 params['delta_std'] = p
                                 print('Seed: %d, Horizon: %d, Step Size: %f, Num directions: %d, Used directions: %d, Perturbation: %f' % (seed, h, s, nd, ntd, p))
-                                result_table[c] = run_exact.remote(params)
+                                if not infeasible:                                    
+                                    result_table[c] = run_exact.remote(params)
+                                else:
+                                    result_table[c] = ray.put(float('inf'))
                                 c += 1
                             result_table[prev_c:c] = ray.get(result_table[prev_c:c])
+                            infeasible = False
                             prev_c = c
 
 
