@@ -69,18 +69,18 @@ def main():
                     for ntd in num_top_directions:
                         if ntd > nd:
                             infeasible = True
-                            params['deltas_used'] = ntd
-                            for p in perturbations:
-                                params['delta_std'] = p
-                                print('Seed: %d, Horizon: %d, Step Size: %f, Num directions: %d, Used directions: %d, Perturbation: %f' % (seed, h, s, nd, ntd, p))
-                                if not infeasible:                                    
-                                    result_table[c] = run_exact.remote(params)
-                                else:
-                                    result_table[c] = ray.put(float('inf'))
-                                c += 1
-                            result_table[prev_c:c] = ray.get(result_table[prev_c:c])
-                            infeasible = False
-                            prev_c = c
+                        params['deltas_used'] = ntd
+                        for p in perturbations:
+                            params['delta_std'] = p
+                            print('Seed: %d, Horizon: %d, Step Size: %f, Num directions: %d, Used directions: %d, Perturbation: %f' % (seed, h, s, nd, ntd, p))
+                            if not infeasible:                                    
+                                result_table[c] = run_exact.remote(params)
+                            else:
+                                result_table[c] = ray.put(float('inf'))
+                            c += 1
+                        result_table[prev_c:c] = ray.get(result_table[prev_c:c])
+                        infeasible = False
+                        prev_c = c
 
 
     result_table = np.array(result_table).reshape(len(tune_param_seed), len(horizons), len(stepsizes), len(num_directions), len(num_top_directions), len(perturbations))
