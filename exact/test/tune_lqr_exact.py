@@ -25,6 +25,10 @@ def main():
     parser.add_argument('--one_point', action='store_true')
     parser.add_argument('--tuning', action='store_true')
     parser.add_argument('--max_num_steps', type=int, default=1e5)
+    # horizon parameters
+    parser.add_argument('--h_start', type=int, default=1)
+    parser.add_argument('--h_end', type=int, default=21)
+    parser.add_argument('--h_bin', type=int, default=2)
 
     args = parser.parse_args()
     params = vars(args)
@@ -40,7 +44,7 @@ def main():
     num_top_directions = [1, 5, 10]
     perturbations = [1e-4, 5e-4, 1e-3]
 
-    horizons = list(range(1, 21, 2))
+    horizons = list(range(args.h_start, args.h_end, args.h_bin))
 
 
     initial_seed = 100
@@ -80,8 +84,13 @@ def main():
 
 
     result_table = np.array(result_table).reshape(len(tune_param_seed), len(horizons), len(stepsizes), len(num_directions), len(num_top_directions), len(perturbations))
-    pickle.dump(result_table, open('data/exact_tuning.pkl', 'wb'))    
-    
+    min_indices = np.array([np.unravel_index(np.argmin(result_table[i, :]), result_table[i, :].shape) for i in range(len(horizons))])
+    ss = np.array(stepsizes)[min_indices[:, 0]]
+    nd = np.array(num_directions)[min_indices[:, 1]]
+    ntd = np.array(num_top_directions)[min_indices[:, 2]]
+    pt = np.array(perturbations)[min_indices[:, 3]]
+    filename = 'data/exact_tuning_lqr_' + str(args.h_start) + '_' + str(args.h_end) + '_' + str(args.h_bin) +'.pkl'
+    pickle.dump((result_table, (ss, nd, ntd, pt)), open(filename, 'wb'))
 
 if __name__ == '__main__':
     main()
