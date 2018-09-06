@@ -14,7 +14,7 @@ def create_shared_noise():
     """
 
     seed = 12345
-    count = 250000000
+    count = 2500000
     noise = np.random.RandomState(seed).randn(count).astype(np.float64)
     return noise
 
