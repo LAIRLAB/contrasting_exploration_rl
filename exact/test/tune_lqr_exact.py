@@ -35,14 +35,16 @@ def main():
 
     ray.init()
 
-    #stepsizes = [1e-5, 5e-5, 1e-4, 5e-4, 1e-3, 5e-3, 1e-2]
-    #num_directions = [1, 5, 10, 20, 50, 100]
-    #num_top_directions = [1, 5, 10, 20, 50, 100]
-    #perturbations = [1e-5, 5e-5, 1e-4, 5e-4, 1e-3, 5e-3, 1e-2]
+    stepsizes = [5e-6, 1e-5, 5e-5, 1e-4, 5e-4, 1e-3, 5e-3]
+    num_directions = [1]
+    num_top_directions = [1]
+    perturbations = [1e-6, 5e-6, 1e-5, 5e-5, 1e-4, 5e-4, 1e-3]
+    '''
     stepsizes = [1e-4, 5e-4, 1e-3]
-    num_directions = [1, 5, 10]
-    num_top_directions = [1, 5, 10]
+    num_directions = [1, 5, 10]  # NOTE: Always choses 1 direction
+    num_top_directions = [1, 5, 10]  # NOTE: Always choses 1 direction
     perturbations = [1e-4, 5e-4, 1e-3]
+    '''
 
     horizons = list(range(args.h_start, args.h_end, args.h_bin))
 

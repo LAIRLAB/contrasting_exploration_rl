@@ -163,7 +163,7 @@ class ARSLearner(object):
         return self.timesteps
 
     def close_to_optimal(self):
-        if np.abs(self.env.evaluate_policy(self.w_policy) - self.env.optimal_cost) / self.env.optimal_cost < 0.05:
+        if np.abs(self.env.evaluate_policy(self.w_policy) - self.env.optimal_cost) / self.env.optimal_cost < 0.10:
             return True
         return False
 

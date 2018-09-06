@@ -168,7 +168,8 @@ class ExActLearner(object):
     def close_to_optimal(self):
         if not self.is_lqr:
             return False
-        if np.abs(self.env.evaluate_policy(self.w_policy) - self.env.optimal_cost) / self.env.optimal_cost < 0.05:
+        # NOTE: Changed to 10%
+        if np.abs(self.env.evaluate_policy(self.w_policy) - self.env.optimal_cost) / self.env.optimal_cost < 0.10:
             return True
         return False
 
