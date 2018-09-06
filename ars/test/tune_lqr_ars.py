@@ -79,12 +79,13 @@ def main():
                             else:
                                 result_table[c] = ray.put(float('inf'))
                             c += 1
-                        result_table[prev_c:c] = ray.get(result_table[prev_c:c])
                         infeasible = False
-                        prev_c = c
+                    result_table[prev_c:c] = ray.get(result_table[prev_c:c])
+                    prev_c = c
 
 
     result_table = np.array(result_table).reshape(len(tune_param_seed), len(horizons), len(stepsizes), len(num_directions), len(num_top_directions), len(perturbations))
+    result_table = np.mean(result_table, axis=0)
     min_indices = np.array([np.unravel_index(np.argmin(result_table[i, :]), result_table[i, :].shape) for i in range(len(horizons))])
     ss = np.array(stepsizes)[min_indices[:, 0]]
     nd = np.array(num_directions)[min_indices[:, 1]]
