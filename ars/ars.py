@@ -32,6 +32,7 @@ class ARSLearner(object):
         self.logdir = logdir
         self.shift = params['shift']
         self.params = params
+        self.policy_params = policy_params
         self.max_past_avg_reward = float('-inf')
         self.num_episodes_used = float('inf')
         self.seed = params['seed']
@@ -46,8 +47,11 @@ class ARSLearner(object):
                                       deltas_id,
                                       params) for i in range(self.num_workers)]
 
-        if policy_params['type'] == 'linear':
+        if policy_params['type'] == 'linear' and not policy_params['non_stationary']:
             self.policy = LinearPolicy(policy_params, seed=params['seed'])
+            self.w_policy = self.policy.get_weights()
+        elif policy_params['type'] == 'linear' and policy_params['non_stationary']:
+            self.policy = LinearNonStationaryPolicy(policy_params, seed=params['seed'])
             self.w_policy = self.policy.get_weights()
         else:
             raise NotImplementedError
@@ -134,7 +138,7 @@ class ARSLearner(object):
                 logz.log_tabular("MinRewardRollout", np.min(rewards))
                 logz.log_tabular("timesteps", self.timesteps)
                 if self.is_lqr:
-                    cost = self.env.evaluate_policy(self.w_policy)
+                    cost = self.env.evaluate_policy(self.w_policy, self.policy_params['non_stationary'])
                     logz.log_tabular("optimal cost", self.env.optimal_cost)
                     logz.log_tabular("cost", cost)
                 logz.dump_tabular()
@@ -163,7 +167,7 @@ class ARSLearner(object):
         return self.timesteps
 
     def close_to_optimal(self):
-        if np.abs(self.env.evaluate_policy(self.w_policy) - self.env.optimal_cost) / self.env.optimal_cost < 0.10:
+        if np.abs(self.env.evaluate_policy(self.w_policy, self.policy_params['non_stationary']) - self.env.optimal_cost) / self.env.optimal_cost < 0.10:
             return True
         return False
 
@@ -185,7 +189,9 @@ def run_ars(params):
     policy_params={'type':'linear',
                    'ob_filter':params['filter'],
                    'ob_dim':ob_dim,
-                   'ac_dim':ac_dim}
+                   'ac_dim':ac_dim,
+                   'non_stationary':params['non_stationary'],
+                   'H': params['rollout_length']}
 
     ARS = ARSLearner(policy_params=policy_params,
                      logdir=logdir,

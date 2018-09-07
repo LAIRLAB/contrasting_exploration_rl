@@ -33,7 +33,8 @@ def main():
     args = parser.parse_args()
     params = vars(args)
 
-    ray.init()
+    # ray.init()
+    ray.init(redis_address="192.168.1.115:6379")
 
     filename = 'data/exact_tuning_lqr_' + str(args.h_start) + '_' + str(args.h_end) + '_' + str(args.h_bin) +'.pkl'
     _, tuned_params = pickle.load(open(filename, 'rb'))

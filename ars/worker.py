@@ -14,8 +14,10 @@ class Worker(object):
         self.deltas = SharedNoiseTable(deltas, seed=seed+7)
         self.policy_params = policy_params
 
-        if policy_params['type'] == 'linear':
+        if policy_params['type'] == 'linear' and not policy_params['non_stationary']:
             self.policy = LinearPolicy(policy_params, seed=params['seed'])
+        elif policy_params['type'] == 'linear' and policy_params['non_stationary']:
+            self.policy = LinearNonStationaryPolicy(policy_params, seed=params['seed'])
         else:
             raise NotImplementedError
 
@@ -35,7 +37,10 @@ class Worker(object):
 
         ob = self.env.reset()
         for i in range(rollout_length):
-            action = self.policy.act(ob)
+            if self.policy_params['non_stationary']:
+                action = self.policy.act(ob, i)
+            else:                
+                action = self.policy.act(ob)
             ob, reward, done, _ = self.env.step(action)
             steps += 1
             total_reward += (reward - shift)

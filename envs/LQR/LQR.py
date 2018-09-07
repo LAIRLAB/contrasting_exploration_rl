@@ -15,14 +15,17 @@ def finite_LQR_solver(A,B,Q,R,T, x_0):
     
   return x_0.dot(P).dot(x_0)
   
-def finite_K_cost(A, B, Q, R, K, T, x_0):
+def finite_K_cost(A, B, Q, R, K, T, x_0, non_stationary=False):
   x_dim = A.shape[0]
   a_dim = B.shape[1]
   P = np.zeros((x_dim,x_dim))
   total_c = 0
   x = x_0
   for i in range(T):
-    u = K.dot(x)
+    if non_stationary:
+      u = K[i, :].dot(x)
+    else:      
+      u = K.dot(x)
     total_c += x.dot(Q).dot(x) + u.dot(R).dot(u)
     x = A.dot(x) + B.dot(u)
   return total_c
@@ -82,8 +85,8 @@ class LQREnv(gym.Env):
     def render(self, mode='human', close=False):
       pass 
 
-    def evaluate_policy(self, K):
+    def evaluate_policy(self, K, non_stationary=False):
       cost_for_K = finite_K_cost(self.A,self.B,self.Q, self.R, K, 
-                                 self.T, self.init_state)
+                                 self.T, self.init_state, non_stationary=non_stationary)
       
       return cost_for_K    

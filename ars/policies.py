@@ -57,3 +57,24 @@ class LinearPolicy(Policy):
         aux = np.asarray([self.weights, mu, std])
         return aux
         
+
+class LinearNonStationaryPolicy(Policy):
+    """
+    Linear non-stationary policy class that computes action as <w_t, ob>
+    """
+
+    def __init__(self, policy_params, seed):
+        Policy.__init__(self, policy_params)
+        assert policy_params['non_stationary'] == True
+        self.H = policy_params['H']
+        self.weights = np.random.RandomState(seed).randn(self.H, self.ac_dim, self.ob_dim) * 0.1
+
+    def act(self, ob, t):
+        assert t < self.H
+        ob = self.observation_filter(ob, update=self.update_filter)
+        return np.dot(self.weights[t, :], ob)
+
+    def get_weights_plus_stats(self):
+        mu, std = self.observation_filter.get_stats()
+        aux = np.asarray([self.weights, mu, std])
+        return aux
