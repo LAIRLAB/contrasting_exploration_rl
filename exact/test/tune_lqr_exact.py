@@ -81,8 +81,8 @@ def main():
                                 result_table[c] = ray.put(float('inf'))
                             c += 1
                         infeasible = False
-                    result_table[prev_c:c] = ray.get(result_table[prev_c:c])
-                    prev_c = c
+            result_table[prev_c:c] = ray.get(result_table[prev_c:c])
+            prev_c = c
 
 
     result_table = np.array(result_table).reshape(len(tune_param_seed), len(horizons), len(stepsizes), len(num_directions), len(num_top_directions), len(perturbations))
