@@ -30,6 +30,8 @@ def main():
     parser.add_argument('--h_start', type=int, default=1)
     parser.add_argument('--h_end', type=int, default=21)
     parser.add_argument('--h_bin', type=int, default=2)
+    # tuning parameters
+    parser.add_argument('--num_random_seeds', type=int, default=5)
 
     args = parser.parse_args()
     params = vars(args)
@@ -54,7 +56,7 @@ def main():
 
     initial_seed = 100
     np.random.seed(params['seed'])
-    tune_param_seed = list(np.random.randint(low = 1, high = 1e8,size = 3))
+    tune_param_seed = list(np.random.randint(low = 1, high = 1e8,size=args.num_random_seeds))
     params['tuning'] = True
     
     result_table = np.zeros((len(tune_param_seed), len(horizons), len(stepsizes), len(num_directions), len(num_top_directions), len(perturbations)))
