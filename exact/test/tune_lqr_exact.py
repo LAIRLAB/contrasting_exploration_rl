@@ -38,7 +38,7 @@ def main():
     stepsizes = [5e-6, 1e-5, 5e-5, 1e-4, 5e-4, 1e-3, 5e-3]
     num_directions = [1]
     num_top_directions = [1]
-    perturbations = [1e-6]
+    perturbations = [1e-4]
     '''
     stepsizes = [1e-4, 5e-4, 1e-3]
     num_directions = [1, 5, 10]  # NOTE: Always choses 1 direction
