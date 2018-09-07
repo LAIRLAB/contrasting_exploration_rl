@@ -14,7 +14,7 @@ def main():
     parser.add_argument('--deltas_used', '-du', type=int, default=8)
     parser.add_argument('--step_size', '-s', type=float, default=0.02)
     parser.add_argument('--delta_std', '-std', type=float, default=.03)
-    parser.add_argument('--n_workers', '-e', type=int, default=18)
+    parser.add_argument('--n_workers', '-e', type=int, default=4)
     parser.add_argument('--rollout_length', '-r', type=int, default=10)
     parser.add_argument('--shift', type=float, default=0)
     parser.add_argument('--seed', type=int, default=10)
@@ -25,6 +25,7 @@ def main():
     parser.add_argument('--one_point', action='store_true')
     parser.add_argument('--tuning', action='store_true')
     parser.add_argument('--max_num_steps', type=int, default=1e4)
+    parser.add_argument('--non_stationary', action='store_true')
     # horizon parameters
     parser.add_argument('--h_start', type=int, default=1)
     parser.add_argument('--h_end', type=int, default=21)
