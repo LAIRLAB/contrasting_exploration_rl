@@ -10,7 +10,7 @@ def main():
     parser.add_argument('--n_directions', '-nd', type=int, default=1)
     parser.add_argument('--deltas_used', '-du', type=int, default=1)
     parser.add_argument('--step_size', '-s', type=float, default=0.02)
-    parser.add_argument('--delta_std', '-std', type=float, default=1e-3)
+    parser.add_argument('--delta_std', '-std', type=float, default=1e-2)
     parser.add_argument('--n_workers', '-e', type=int, default=1)
     parser.add_argument('--rollout_length', '-r', type=int, default=10)
     parser.add_argument('--shift', type=float, default=0)
@@ -35,7 +35,7 @@ def main():
 
     ray.init()
 
-    stepsizes = [5e-6, 1e-5, 5e-5, 1e-4, 5e-4, 1e-3, 5e-3]
+    stepsizes = [1e-4, 5e-4, 1e-3, 5e-3, 1e-2, 5e-2, 1e-1]
     horizons = list(range(args.h_start, args.h_end, args.h_bin))
 
 
