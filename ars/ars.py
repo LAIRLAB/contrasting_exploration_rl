@@ -107,7 +107,7 @@ class ARSLearner(object):
                                             (self.deltas.get(idx, self.w_policy.size) for idx in deltas_idx),
                                             batch_size=500)
 
-        g_hat /= (2 * self.params['delta_std'] * deltas_idx.size)  # FIX: Added 2\delta in the denominator
+        g_hat /= (deltas_idx.size)
         return g_hat
 
     def train_step(self):

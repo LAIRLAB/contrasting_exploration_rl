@@ -37,6 +37,7 @@ def main():
 
     stepsizes = [1e-4, 5e-4, 1e-3, 5e-3, 1e-2, 5e-2, 1e-1]
     horizons = list(range(args.h_start, args.h_end, args.h_bin))
+    # FIX: Using just 1 direction, no normalization and 0.01 perturbation
 
 
     initial_seed = 100
