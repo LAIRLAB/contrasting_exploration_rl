@@ -25,10 +25,10 @@ def main():
     parser.add_argument('--non_stationary', action='store_true')
     # horizon parameters
     parser.add_argument('--h_start', type=int, default=1)
-    parser.add_argument('--h_end', type=int, default=21)
-    parser.add_argument('--h_bin', type=int, default=2)
+    parser.add_argument('--h_end', type=int, default=202)
+    parser.add_argument('--h_bin', type=int, default=20)
     # tuning parameters
-    parser.add_argument('--num_random_seeds', type=int, default=5)
+    parser.add_argument('--num_random_seeds', type=int, default=3)
 
     args = parser.parse_args()
     params = vars(args)
@@ -69,12 +69,12 @@ def main():
 
     result_table = np.array(result_table).reshape(len(tune_param_seed), len(horizons), len(stepsizes))
     result_table = np.mean(result_table, axis=0)
-    min_indices = np.array([np.unravel_index(np.argmin(result_table[i, :]), result_table[i, :].shape) for i in range(len(horizons))])
-    ss = np.array(stepsizes)[min_indices[:, 0]]
+    max_indices = np.array([np.unravel_index(np.argmax(result_table[i, :]), result_table[i, :].shape) for i in range(len(horizons))])
+    ss = np.array(stepsizes)[max_indices[:, 0]]
     nd = np.array([params['n_directions'] for _ in range(len(horizons))])
     ntd = np.array([params['deltas_used'] for _ in range(len(horizons))])
     pt = np.array([params['delta_std'] for _ in range(len(horizons))])
-    filename = 'data/ars_tuning_lqr_' + str(args.h_start) + '_' + str(args.h_end) + '_' + str(args.h_bin) +'.pkl'
+    filename = 'data/ars_tuning_'+str(params['env_name'])+'_'+ str(args.h_start) + '_' + str(args.h_end) + '_' + str(args.h_bin) +'.pkl'
     pickle.dump((result_table, (ss, nd, ntd, pt)), open(filename, 'wb'))
 
 if __name__ == '__main__':
