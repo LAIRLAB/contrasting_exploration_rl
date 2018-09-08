@@ -167,6 +167,8 @@ class ARSLearner(object):
         return self.timesteps
 
     def close_to_optimal(self):
+        if not self.is_lqr:
+            return False
         if np.abs(self.env.evaluate_policy(self.w_policy, self.policy_params['non_stationary']) - self.env.optimal_cost) / self.env.optimal_cost < 0.10:
             return True
         return False
