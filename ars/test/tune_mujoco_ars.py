@@ -49,6 +49,9 @@ def main():
 
     prev_c = 0
     c = 0
+    nd = params['n_directions']
+    ntd = params['deltas_used']
+    p = params['delta_std']
     for seed in tune_param_seed:
         params['seed'] = seed
         for h in horizons:

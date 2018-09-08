@@ -164,7 +164,13 @@ class ARSLearner(object):
             # waiting for increment of all workers
             ray.get(increment_filters_ids)
             i += 1
-        return self.timesteps
+        if not self.is_lqr:            
+            # Evaluation
+            rewards = self.aggregate_rollouts(num_rollouts=100, evaluate=True)
+            return np.mean(rewards)
+        else:            
+            return self.timesteps
+        
 
     def close_to_optimal(self):
         if not self.is_lqr:
