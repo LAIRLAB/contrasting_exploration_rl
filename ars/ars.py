@@ -107,7 +107,7 @@ class ARSLearner(object):
                                             (self.deltas.get(idx, self.w_policy.size) for idx in deltas_idx),
                                             batch_size=500)
 
-        g_hat /= deltas_idx.size
+        g_hat /= (deltas_idx.size)
         return g_hat
 
     def train_step(self):
@@ -164,9 +164,17 @@ class ARSLearner(object):
             # waiting for increment of all workers
             ray.get(increment_filters_ids)
             i += 1
-        return self.timesteps
+        if not self.is_lqr:            
+            # Evaluation
+            rewards = self.aggregate_rollouts(num_rollouts=100, evaluate=True)
+            return np.mean(rewards)
+        else:            
+            return self.timesteps
+        
 
     def close_to_optimal(self):
+        if not self.is_lqr:
+            return False
         if np.abs(self.env.evaluate_policy(self.w_policy, self.policy_params['non_stationary']) - self.env.optimal_cost) / self.env.optimal_cost < 0.10:
             return True
         return False
