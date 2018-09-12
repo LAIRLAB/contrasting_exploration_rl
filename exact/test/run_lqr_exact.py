@@ -14,7 +14,7 @@ def main():
     parser.add_argument('--deltas_used', '-du', type=int, default=8)
     parser.add_argument('--step_size', '-s', type=float, default=0.02)
     parser.add_argument('--delta_std', '-std', type=float, default=.03)
-    parser.add_argument('--n_workers', '-e', type=int, default=18)
+    parser.add_argument('--n_workers', '-e', type=int, default=2)
     parser.add_argument('--rollout_length', '-r', type=int, default=10)
     parser.add_argument('--shift', type=float, default=0)
     parser.add_argument('--seed', type=int, default=10)
@@ -33,8 +33,8 @@ def main():
     args = parser.parse_args()
     params = vars(args)
 
-    # ray.init()
-    ray.init(redis_address="192.168.1.115:6379")
+    ray.init()
+    # ray.init(redis_address="192.168.1.115:6379")
 
     filename = 'data/exact_tuning_lqr_' + str(args.h_start) + '_' + str(args.h_end) + '_' + str(args.h_bin) +'.pkl'
     _, tuned_params = pickle.load(open(filename, 'rb'))
