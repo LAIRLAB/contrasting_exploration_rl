@@ -3,6 +3,8 @@ import gym
 import gym.spaces.box as gym_box
 from gym.utils import seeding
 import scipy.linalg as LA
+import autograd.numpy as anp
+from autograd import grad
 
 def finite_LQR_solver(A,B,Q,R,T, x_0):
   x_dim = A.shape[0]
@@ -29,6 +31,21 @@ def finite_K_cost(A, B, Q, R, K, T, x_0, non_stationary=False):
     total_c += x.dot(Q).dot(x) + u.dot(R).dot(u)
     x = A.dot(x) + B.dot(u)
   return total_c
+
+def finite_K_gradient(A, B, Q, R, K, T, x_0):
+  x_dim = A.shape[0]
+  a_dim = B.shape[1]
+  def cost(w):
+    total_c = 0
+    x = x_0
+    for i in range(T):
+      u = anp.dot(w, x)  # w.dot(x)
+      total_c += anp.dot(x, anp.dot(Q, x)) + anp.dot(u, anp.dot(R, u)) # x.dot(Q).dot(x) + u.dot(R).dot(u)
+      x = anp.dot(A, x) + anp.dot(B, u)  # A.dot(x) + B.dot(u)
+    return total_c
+  grad_cost = grad(cost)
+  return grad_cost(K)
+      
 
 class LQREnv(gym.Env):
 
@@ -88,5 +105,6 @@ class LQREnv(gym.Env):
     def evaluate_policy(self, K, non_stationary=False):
       cost_for_K = finite_K_cost(self.A,self.B,self.Q, self.R, K, 
                                  self.T, self.init_state, non_stationary=non_stationary)
-      
-      return cost_for_K    
+
+      gradient_of_K = finite_K_gradient(self.A,self.B,self.Q, self.R, K, self.T, self.init_state)
+      return cost_for_K, gradient_of_K

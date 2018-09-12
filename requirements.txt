@@ -4,3 +4,4 @@ matplotlib
 gym
 scipy
 jupyter
+autograd
