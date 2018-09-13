@@ -122,30 +122,31 @@ class ARSLearner(object):
         while self.timesteps < max_num_steps:            
             self.train_step()
 
-            if ((i+1) % 10 == 0) and not self.tuning:
+            if ((i+1) % 10 == 0):
 
-                rewards = self.aggregate_rollouts(num_rollouts=100, evaluate=True)
-                w = ray.get(self.workers[0].get_weights_plus_stats.remote())                
-                np.savez(self.logdir + '/lin_policy_plus', w)
+                if not self.tuning:
+                    
+                    rewards = self.aggregate_rollouts(num_rollouts=100, evaluate=True)
+                    w = ray.get(self.workers[0].get_weights_plus_stats.remote())                
+                    np.savez(self.logdir + '/lin_policy_plus', w)
 
-                # print(sorted(self.params.items()))
-                print
-                logz.log_tabular("Time", time.time() - start)
-                logz.log_tabular("Iteration", i + 1)
-                logz.log_tabular("AverageReward", np.mean(rewards))
-                logz.log_tabular("StdRewards", np.std(rewards))
-                logz.log_tabular("MaxRewardRollout", np.max(rewards))
-                logz.log_tabular("MinRewardRollout", np.min(rewards))
-                logz.log_tabular("timesteps", self.timesteps)
-                if self.is_lqr:
-                    cost = self.env.evaluate_policy(self.w_policy, self.policy_params['non_stationary'])
-                    logz.log_tabular("optimal cost", self.env.optimal_cost)
-                    logz.log_tabular("cost", cost)
-                logz.dump_tabular()
-
-            # Check for convergence
-            if self.close_to_optimal() and self.is_lqr:
-                return self.timesteps
+                    # print(sorted(self.params.items()))
+                    print
+                    logz.log_tabular("Time", time.time() - start)
+                    logz.log_tabular("Iteration", i + 1)
+                    logz.log_tabular("AverageReward", np.mean(rewards))
+                    logz.log_tabular("StdRewards", np.std(rewards))
+                    logz.log_tabular("MaxRewardRollout", np.max(rewards))
+                    logz.log_tabular("MinRewardRollout", np.min(rewards))
+                    logz.log_tabular("timesteps", self.timesteps)
+                    if self.is_lqr:
+                        cost = self.env.evaluate_policy(self.w_policy, self.policy_params['non_stationary'])
+                        logz.log_tabular("optimal cost", self.env.optimal_cost)
+                        logz.log_tabular("cost", cost)
+                    logz.dump_tabular()
+                # Check for convergence
+                if self.close_to_optimal() and self.is_lqr:
+                    return self.timesteps
 
             # get statistics from all workers
             for j in range(self.num_workers):

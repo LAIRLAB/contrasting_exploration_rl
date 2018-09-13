@@ -123,29 +123,31 @@ class ExActLearner(object):
         while self.timesteps < max_num_steps:            
             self.train_step()
 
-            if ((i+1) % 10 == 0) and not self.tuning:
+            if ((i+1) % 10 == 0):
 
-                rewards = self.aggregate_rollouts(num_rollouts=100, evaluate=True)
-                w = ray.get(self.workers[0].get_weights_plus_stats.remote())
-                np.savez(self.logdir + '/lin_policy_plus', w)                            
+                if not self.tuning:
+                    
+                    rewards = self.aggregate_rollouts(num_rollouts=100, evaluate=True)
+                    w = ray.get(self.workers[0].get_weights_plus_stats.remote())
+                    np.savez(self.logdir + '/lin_policy_plus', w)                            
+                    
+                    print
+                    logz.log_tabular("Time", time.time() - start)
+                    logz.log_tabular("Iteration", i + 1)
+                    logz.log_tabular("AverageReward", np.mean(rewards))
+                    logz.log_tabular("StdRewards", np.std(rewards))
+                    logz.log_tabular("MaxRewardRollout", np.max(rewards))
+                    logz.log_tabular("MinRewardRollout", np.min(rewards))
+                    logz.log_tabular("timesteps", self.timesteps)
+                    if self.params['env_name'] == 'LQR':
+                        cost = self.env.evaluate_policy(self.w_policy)
+                        logz.log_tabular("optimal cost", self.env.optimal_cost)
+                        logz.log_tabular("cost", cost)
+                    logz.dump_tabular()                    
 
-                print
-                logz.log_tabular("Time", time.time() - start)
-                logz.log_tabular("Iteration", i + 1)
-                logz.log_tabular("AverageReward", np.mean(rewards))
-                logz.log_tabular("StdRewards", np.std(rewards))
-                logz.log_tabular("MaxRewardRollout", np.max(rewards))
-                logz.log_tabular("MinRewardRollout", np.min(rewards))
-                logz.log_tabular("timesteps", self.timesteps)
-                if self.params['env_name'] == 'LQR':
-                    cost = self.env.evaluate_policy(self.w_policy)
-                    logz.log_tabular("optimal cost", self.env.optimal_cost)
-                    logz.log_tabular("cost", cost)
-                logz.dump_tabular()                    
-
-            # Check for convergence for tuning purposes
-            if self.close_to_optimal() and self.is_lqr:
-                return self.timesteps
+                # Check for convergence for tuning purposes
+                if self.close_to_optimal() and self.is_lqr:
+                    return self.timesteps
             # get statistics from all workers
             for j in range(self.num_workers):
                 self.policy.observation_filter.update(ray.get(self.workers[j].get_filter.remote()))
