@@ -32,7 +32,7 @@ def main():
     # tuning parameters
     parser.add_argument('--num_random_seeds', type=int, default=5)
     # convergence parameters
-    parser.add_argument('--epsilon', type=float, default=1e-3)
+    parser.add_argument('--epsilon', type=float, default=5e-3)
 
     args = parser.parse_args()
     params = vars(args)

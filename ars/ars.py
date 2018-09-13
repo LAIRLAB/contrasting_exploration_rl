@@ -144,9 +144,9 @@ class ARSLearner(object):
                         logz.log_tabular("optimal cost", self.env.optimal_cost)
                         logz.log_tabular("cost", cost)
                     logz.dump_tabular()
-                # Check for convergence
-                if self.close_to_optimal() and self.is_lqr:
-                    return self.timesteps
+            # Check for convergence
+            if self.close_to_optimal() and self.is_lqr:
+                return self.timesteps
 
             # get statistics from all workers
             for j in range(self.num_workers):

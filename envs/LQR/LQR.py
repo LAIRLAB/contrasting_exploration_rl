@@ -79,6 +79,17 @@ class LQREnv(gym.Env):
       
       self.optimal_cost = finite_LQR_solver(self.A,self.B, self.Q,self.R, self.T, 
                                             self.init_state)
+
+      def cost(w):
+        total_c = 0
+        x = self.init_state
+        for i in range(self.T):
+          u = anp.dot(w, x)  # w.dot(x)
+          total_c += anp.dot(x, anp.dot(self.Q, x)) + anp.dot(u, anp.dot(self.R, u)) # x.dot(Q).dot(x) + u.dot(R).dot(u)
+          x = anp.dot(self.A, x) + anp.dot(self.B, u)  # A.dot(x) + B.dot(u)
+        return total_c
+
+      self.grad_func = grad(cost)
       
       self.reset()
       
@@ -106,5 +117,5 @@ class LQREnv(gym.Env):
       cost_for_K = finite_K_cost(self.A,self.B,self.Q, self.R, K, 
                                  self.T, self.init_state, non_stationary=non_stationary)
 
-      gradient_of_K = finite_K_gradient(self.A,self.B,self.Q, self.R, K, self.T, self.init_state)
+      gradient_of_K = self.grad_func(K)
       return cost_for_K, gradient_of_K
