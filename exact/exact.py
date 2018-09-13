@@ -169,7 +169,8 @@ class ExActLearner(object):
         if not self.is_lqr:
             return False
         # NOTE: Changed to 10%
-        if np.abs(self.env.evaluate_policy(self.w_policy) - self.env.optimal_cost) / self.env.optimal_cost < 0.10:
+        # if np.abs(self.env.evaluate_policy(self.w_policy) - self.env.optimal_cost) / self.env.optimal_cost < 0.10:
+        if np.linalg.norm(self.env.evaluate_policy(self.w_policy)[1]) < self.params['epsilon']:            
             return True
         return False
 

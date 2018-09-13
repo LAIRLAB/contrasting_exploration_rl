@@ -62,7 +62,7 @@ class LQREnv(gym.Env):
       
       self.B = np.ones((x_dim, u_dim))
       self.Q = np.eye(x_dim) / 1000
-      self.R = np.eye(u_dim) # * 1000  # FIX: Changed the cost to 1000
+      self.R = np.eye(u_dim)
       
       self.x_dim = x_dim
       self.a_dim = u_dim

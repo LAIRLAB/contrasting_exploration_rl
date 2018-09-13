@@ -31,6 +31,8 @@ def main():
     parser.add_argument('--h_bin', type=int, default=2)
     # tuning parameters
     parser.add_argument('--num_random_seeds', type=int, default=5)
+    # convergence parameters
+    parser.add_argument('--epsilon', type=float, default=1e-3)
 
     args = parser.parse_args()
     params = vars(args)
@@ -84,6 +86,7 @@ def main():
                             c += 1
                         infeasible = False
             result_table[prev_c:c] = ray.get(result_table[prev_c:c])
+            print(result_table[prev_c:c])
             prev_c = c
 
 
