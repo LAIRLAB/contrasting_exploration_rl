@@ -177,7 +177,7 @@ class ARSLearner(object):
         if not self.is_lqr:
             return False
         # if np.abs(self.env.evaluate_policy(self.w_policy, self.policy_params['non_stationary']) - self.env.optimal_cost) / self.env.optimal_cost < 0.10:
-        if np.linalg.norm(self.env.evaluate_policy(self.w_policy)[1]) < self.params['epsilon']:            
+        if np.linalg.norm(self.env.evaluate_policy(self.w_policy)[1])**2 < self.params['epsilon']:            
             return True
         return False
 
