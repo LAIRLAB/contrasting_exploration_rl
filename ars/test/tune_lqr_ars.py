@@ -40,7 +40,7 @@ def main():
 
     ray.init()
 
-    stepsizes = [5e-4, 1e-3, 5e-3, 1e-2, 5e-2, 1e-1]
+    stepsizes = [1e-4, 5e-4, 1e-3, 5e-3, 1e-2]
     num_directions = [1]
     num_top_directions = [1]
     perturbations = [1e-4]
