@@ -14,7 +14,7 @@ def main():
     parser.add_argument('--deltas_used', '-du', type=int, default=8)
     parser.add_argument('--step_size', '-s', type=float, default=0.02)
     parser.add_argument('--delta_std', '-std', type=float, default=.03)
-    parser.add_argument('--n_workers', '-e', type=int, default=2)
+    parser.add_argument('--n_workers', '-e', type=int, default=1)
     parser.add_argument('--rollout_length', '-r', type=int, default=10)
     parser.add_argument('--shift', type=float, default=0)
     parser.add_argument('--seed', type=int, default=237)
@@ -31,9 +31,9 @@ def main():
     parser.add_argument('--h_end', type=int, default=21)
     parser.add_argument('--h_bin', type=int, default=2)
     # tuning parameters
-    parser.add_argument('--num_random_seeds', type=int, default=5)
+    parser.add_argument('--num_random_seeds', type=int, default=3)
     # Convergence parameters
-    parser.add_argument('--epsilon', type=float, default=1e-2)
+    parser.add_argument('--epsilon', type=float, default=2e-2)
 
     args = parser.parse_args()
     params = vars(args)
@@ -43,7 +43,7 @@ def main():
     stepsizes = [1e-4, 5e-4, 1e-3, 5e-3, 1e-2]
     num_directions = [1]
     num_top_directions = [1]
-    perturbations = [1e-4, 1e-3, 1e-2]
+    perturbations = [1e-4]
 
     horizons = list(range(args.h_start, args.h_end, args.h_bin))
 
