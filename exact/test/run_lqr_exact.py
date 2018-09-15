@@ -14,7 +14,7 @@ def main():
     parser.add_argument('--deltas_used', '-du', type=int, default=8)
     parser.add_argument('--step_size', '-s', type=float, default=0.02)
     parser.add_argument('--delta_std', '-std', type=float, default=.03)
-    parser.add_argument('--n_workers', '-e', type=int, default=2)
+    parser.add_argument('--n_workers', '-e', type=int, default=1)
     parser.add_argument('--rollout_length', '-r', type=int, default=10)
     parser.add_argument('--shift', type=float, default=0)
     parser.add_argument('--seed', type=int, default=10)
@@ -24,11 +24,13 @@ def main():
     parser.add_argument('--filter', type=str, default='NoFilter')
     parser.add_argument('--one_point', action='store_true')
     parser.add_argument('--tuning', action='store_true')
-    parser.add_argument('--max_num_steps', type=int, default=1e4)
+    parser.add_argument('--max_num_steps', type=int, default=1e6)
     # horizon parameters
     parser.add_argument('--h_start', type=int, default=1)
-    parser.add_argument('--h_end', type=int, default=21)
-    parser.add_argument('--h_bin', type=int, default=2)
+    parser.add_argument('--h_end', type=int, default=202)
+    parser.add_argument('--h_bin', type=int, default=20)
+    # Convergence parameters
+    parser.add_argument('--epsilon', type=float, default=1e-2)
 
     args = parser.parse_args()
     params = vars(args)
@@ -36,15 +38,20 @@ def main():
     ray.init()
     # ray.init(redis_address="192.168.1.115:6379")
 
-    filename = 'data/exact_tuning_lqr_' + str(args.h_start) + '_' + str(args.h_end) + '_' + str(args.h_bin) +'.pkl'
-    _, tuned_params = pickle.load(open(filename, 'rb'))
-    ss, nd, ntd, pt = tuned_params
+    # filename = 'data/exact_tuning_lqr_' + str(args.h_start) + '_' + str(args.h_end) + '_' + str(args.h_bin) +'.pkl'
+    # _, tuned_params = pickle.load(open(filename, 'rb'))
+    # ss, nd, ntd, pt = tuned_params
 
     np.random.seed(params['seed'])
     num_random_seeds = 10
     test_param_seed = list(np.random.randint(low=1, high=1e8, size=num_random_seeds))
 
+    # Two point tuned stepsize is 5e-4
+    # One point tuned stepsize is TODO:
     horizons = list(range(args.h_start, args.h_end, args.h_bin))
+    ss = [5e-4 for _ in range(len(horizons))]
+    nd = ntd = [1 for _ in range(len(horizons))]
+    pt = [1e-4 for _ in range(len(horizons))]
 
     result_table = np.zeros((num_random_seeds, len(horizons)))
     for seed_id, seed in enumerate(test_param_seed):
