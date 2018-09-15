@@ -73,12 +73,12 @@ def main():
                             params['delta_std'] = p
                             print('Seed: %d, Horizon: %d, Step Size: %f, Num directions: %d, Used directions: %d, Perturbation: %f' % (seed, h, s, nd, ntd, p))
                             if not infeasible:                                    
-                                result_table[c] = run_exact.remote(params)
+                                result_table[c] = ray.get(run_exact.remote(params))
                             else:
                                 result_table[c] = ray.put(float('inf'))
                             c += 1
                         infeasible = False
-            result_table[prev_c:c] = ray.get(result_table[prev_c:c])
+            # result_table[prev_c:c] = ray.get(result_table[prev_c:c])
             print(result_table[prev_c:c])
             prev_c = c
 
