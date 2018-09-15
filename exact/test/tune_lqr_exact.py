@@ -24,7 +24,7 @@ def main():
     parser.add_argument('--filter', type=str, default='NoFilter')
     parser.add_argument('--one_point', action='store_true')
     parser.add_argument('--tuning', action='store_true')
-    parser.add_argument('--max_num_steps', type=int, default=1e5)
+    parser.add_argument('--max_num_steps', type=float, default=1e5)
     # horizon parameters
     parser.add_argument('--h_start', type=int, default=1)
     parser.add_argument('--h_end', type=int, default=21)
@@ -42,16 +42,9 @@ def main():
     stepsizes = [1e-4, 5e-4, 1e-3, 5e-3, 1e-2]
     num_directions = [1]
     num_top_directions = [1]
-    perturbations = [1e-4]
-    '''
-    stepsizes = [1e-4, 5e-4, 1e-3]
-    num_directions = [1, 5, 10]  # NOTE: Always choses 1 direction
-    num_top_directions = [1, 5, 10]  # NOTE: Always choses 1 direction
-    perturbations = [1e-4, 5e-4, 1e-3]
-    '''
+    perturbations = [1e-4, 1e-3, 1e-2]
 
     horizons = list(range(args.h_start, args.h_end, args.h_bin))
-
 
     initial_seed = 100
     np.random.seed(params['seed'])
@@ -85,9 +78,9 @@ def main():
                                 result_table[c] = ray.put(float('inf'))
                             c += 1
                         infeasible = False
-            result_table[prev_c:c] = ray.get(result_table[prev_c:c])
-            print(result_table[prev_c:c])
-            prev_c = c
+                        result_table[prev_c:c] = ray.get(result_table[prev_c:c])
+                        print(result_table[prev_c:c])
+                        prev_c = c
 
 
     result_table = np.array(result_table).reshape(len(tune_param_seed), len(horizons), len(stepsizes), len(num_directions), len(num_top_directions), len(perturbations))
