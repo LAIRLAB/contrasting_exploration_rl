@@ -140,7 +140,7 @@ class ExActLearner(object):
                     logz.log_tabular("MinRewardRollout", np.min(rewards))
                     logz.log_tabular("timesteps", self.timesteps)
                     if self.params['env_name'] == 'LQR':
-                        cost = self.env.evaluate_policy(self.w_policy)
+                        cost = self.env.evaluate_policy(self.w_policy)[0]
                         logz.log_tabular("optimal cost", self.env.optimal_cost)
                         logz.log_tabular("cost", cost)
                     logz.dump_tabular()                    
