@@ -38,20 +38,13 @@ def main():
     ray.init()
     # ray.init(redis_address="192.168.1.115:6379")
 
-    # filename = 'data/exact_tuning_lqr_' + str(args.h_start) + '_' + str(args.h_end) + '_' + str(args.h_bin) +'.pkl'
-    # _, tuned_params = pickle.load(open(filename, 'rb'))
-    # ss, nd, ntd, pt = tuned_params
+    filename = 'data/exact_tuning_lqr_' + str(args.h_start) + '_' + str(args.h_end) + '_' + str(args.h_bin) +'.pkl'
+    _, tuned_params = pickle.load(open(filename, 'rb'))
+    ss, nd, ntd, pt = tuned_params
 
     np.random.seed(params['seed'])
     num_random_seeds = 10
     test_param_seed = list(np.random.randint(low=1, high=1e8, size=num_random_seeds))
-
-    # Two point tuned stepsize is 5e-4
-    # One point tuned stepsize is TODO:
-    horizons = list(range(args.h_start, args.h_end, args.h_bin))
-    ss = [5e-4 for _ in range(len(horizons))]
-    nd = ntd = [1 for _ in range(len(horizons))]
-    pt = [1e-4 for _ in range(len(horizons))]
 
     result_table = np.zeros((num_random_seeds, len(horizons)))
     for seed_id, seed in enumerate(test_param_seed):
@@ -61,6 +54,7 @@ def main():
             params['n_directions'] = nd[h_id]
             params['deltas_used'] = ntd[h_id]
             params['delta_std'] = pt[h_id]
+            params['rollout_length'] = h
             print('Seed: %d, Horizon: %d, Step Size: %f, Num directions: %d, Used directions: %d, Perturbation: %f' % (seed, h, ss[h_id], nd[h_id], ntd[h_id], pt[h_id]))
             result_table[seed_id, h_id] = ray.get(run_exact.remote(params))
 
