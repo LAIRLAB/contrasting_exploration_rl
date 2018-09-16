@@ -100,7 +100,7 @@ class ExActLearner(object):
         obs = obs[idx, :]
         sampled_ts = sampled_ts[idx]
 
-        rollout_rewards /= np.std(rollout_rewards)
+        # rollout_rewards /= np.std(rollout_rewards)
 
         g_hat, count = batched_weighted_sum_jacobian(rollout_rewards[:, 0] - rollout_rewards[:, 1],
                                                      (self.deltas.get(idx, self.action_size) for idx in deltas_idx),
