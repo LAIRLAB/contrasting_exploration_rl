@@ -17,7 +17,7 @@ def main():
     parser.add_argument('--n_workers', '-e', type=int, default=1)
     parser.add_argument('--rollout_length', '-r', type=int, default=10)
     parser.add_argument('--shift', type=float, default=0)
-    parser.add_argument('--seed', type=int, default=10)
+    parser.add_argument('--seed', type=int, default=0)
     parser.add_argument('--policy_type', type=str, default='linear')
     parser.add_argument('--dir_path', type=str, default='data')
     # for ARS V1 use filter = 'NoFilter'
@@ -38,11 +38,15 @@ def main():
     ray.init()
     # ray.init(redis_address="192.168.1.115:6379")
 
-    filename = 'data/exact_tuning_lqr_' + str(args.h_start) + '_' + str(args.h_end) + '_' + str(args.h_bin) +'.pkl'
-    _, tuned_params = pickle.load(open(filename, 'rb'))
-    ss, nd, ntd, pt = tuned_params
+    # filename = 'data/exact_tuning_lqr_' + str(args.h_start) + '_' + str(args.h_end) + '_' + str(args.h_bin) +'.pkl'
+    # _, tuned_params = pickle.load(open(filename, 'rb'))
+    # ss, nd, ntd, pt = tuned_params
 
     horizons = list(range(args.h_start, args.h_end, args.h_bin))
+
+    ss = [5e-4 for _ in range(len(horizons))]
+    nd = ntd = [1 for _ in range(len(horizons))]
+    pt = [1e-4 for _ in range(len(horizons))]
 
     np.random.seed(params['seed'])
     num_random_seeds = 10

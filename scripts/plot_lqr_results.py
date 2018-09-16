@@ -32,4 +32,6 @@ plt.fill_between(horizons, np.maximum(0, mean_ars - std_ars), np.minimum(1e8, me
 plt.plot(horizons, mean_exact, color='blue', label='ExAct', linewidth=2)
 plt.fill_between(horizons, np.maximum(0, mean_exact - std_exact), np.minimum(1e8, mean_exact + std_exact), facecolor='blue', alpha=0.2)
 
+plt.legend()
+
 plt.show()

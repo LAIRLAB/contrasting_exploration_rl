@@ -17,7 +17,7 @@ def main():
     parser.add_argument('--n_workers', '-e', type=int, default=1)
     parser.add_argument('--rollout_length', '-r', type=int, default=10)
     parser.add_argument('--shift', type=float, default=0)
-    parser.add_argument('--seed', type=int, default=10)
+    parser.add_argument('--seed', type=int, default=0)
     parser.add_argument('--policy_type', type=str, default='linear')
     parser.add_argument('--dir_path', type=str, default='data')
     # for ARS V1 use filter = 'NoFilter'
@@ -38,15 +38,19 @@ def main():
 
     ray.init()
 
-    filename = 'data/ars_tuning_lqr_' + str(args.h_start) + '_' + str(args.h_end) + '_' + str(args.h_bin) +'.pkl'
-    _, tuned_params = pickle.load(open(filename, 'rb'))
-    ss, nd, ntd, pt = tuned_params
+    # filename = 'data/ars_tuning_lqr_' + str(args.h_start) + '_' + str(args.h_end) + '_' + str(args.h_bin) +'.pkl'
+    # _, tuned_params = pickle.load(open(filename, 'rb'))
+    # ss, nd, ntd, pt = tuned_params
 
     np.random.seed(params['seed'])
     num_random_seeds = 10
     test_param_seed = list(np.random.randint(low=1, high=1e8, size=num_random_seeds))
 
     horizons = list(range(args.h_start, args.h_end, args.h_bin))
+
+    ss = [0.01 for _ in range(len(horizons))]
+    nd = ntd = [1 for _ in range(len(horizons))]
+    pt = [1e-4 for _ in range(len(horizons))]
 
     result_table = np.zeros((num_random_seeds, len(horizons)))
     for seed_id, seed in enumerate(test_param_seed):
