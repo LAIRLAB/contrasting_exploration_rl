@@ -38,9 +38,9 @@ def main():
 
     ray.init()
 
-    # filename = 'data/ars_tuning_lqr_' + str(args.h_start) + '_' + str(args.h_end) + '_' + str(args.h_bin) +'.pkl'
-    # _, tuned_params = pickle.load(open(filename, 'rb'))
-    # ss, nd, ntd, pt = tuned_params
+    filename = 'data/ars_tuning_lqr_' + str(args.h_start) + '_' + str(args.h_end) + '_' + str(args.h_bin) +'.pkl'
+    _, tuned_params = pickle.load(open(filename, 'rb'))
+    ss, nd, ntd, pt = tuned_params
 
     np.random.seed(params['seed'])
     num_random_seeds = 10
@@ -48,9 +48,9 @@ def main():
 
     horizons = list(range(args.h_start, args.h_end, args.h_bin))
 
-    ss = [0.01 for _ in range(len(horizons))]
-    nd = ntd = [1 for _ in range(len(horizons))]
-    pt = [1e-4 for _ in range(len(horizons))]
+    # ss = [0.01 for _ in range(len(horizons))]
+    # nd = ntd = [1 for _ in range(len(horizons))]
+    # pt = [1e-4 for _ in range(len(horizons))]
 
     result_table = np.zeros((num_random_seeds, len(horizons)))
     for seed_id, seed in enumerate(test_param_seed):
