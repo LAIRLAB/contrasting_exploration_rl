@@ -42,6 +42,8 @@ def main():
     _, tuned_params = pickle.load(open(filename, 'rb'))
     ss, nd, ntd, pt = tuned_params
 
+    horizons = list(range(args.h_start, args.h_end, args.h_bin))
+
     np.random.seed(params['seed'])
     num_random_seeds = 10
     test_param_seed = list(np.random.randint(low=1, high=1e8, size=num_random_seeds))

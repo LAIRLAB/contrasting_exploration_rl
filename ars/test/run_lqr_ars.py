@@ -46,6 +46,8 @@ def main():
     num_random_seeds = 10
     test_param_seed = list(np.random.randint(low=1, high=1e8, size=num_random_seeds))
 
+    horizons = list(range(args.h_start, args.h_end, args.h_bin))
+
     result_table = np.zeros((num_random_seeds, len(horizons)))
     for seed_id, seed in enumerate(test_param_seed):
         params['seed'] = seed
