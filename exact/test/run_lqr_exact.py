@@ -24,7 +24,7 @@ def main():
     parser.add_argument('--filter', type=str, default='NoFilter')
     parser.add_argument('--one_point', action='store_true')
     parser.add_argument('--tuning', action='store_true')
-    parser.add_argument('--max_num_steps', type=int, default=1e6)
+    parser.add_argument('--max_num_steps', type=float, default=1e5)
     # horizon parameters
     parser.add_argument('--h_start', type=int, default=1)
     parser.add_argument('--h_end', type=int, default=202)
