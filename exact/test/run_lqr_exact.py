@@ -27,10 +27,10 @@ def main():
     parser.add_argument('--max_num_steps', type=float, default=1e5)
     # horizon parameters
     parser.add_argument('--h_start', type=int, default=1)
-    parser.add_argument('--h_end', type=int, default=202)
+    parser.add_argument('--h_end', type=int, default=302)
     parser.add_argument('--h_bin', type=int, default=20)
     # Convergence parameters
-    parser.add_argument('--epsilon', type=float, default=2e-2)
+    parser.add_argument('--epsilon', type=float, default=3e-2)
 
     args = parser.parse_args()
     params = vars(args)

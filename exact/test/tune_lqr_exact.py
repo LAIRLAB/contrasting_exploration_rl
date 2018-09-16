@@ -17,7 +17,7 @@ def main():
     parser.add_argument('--n_workers', '-e', type=int, default=1)
     parser.add_argument('--rollout_length', '-r', type=int, default=10)
     parser.add_argument('--shift', type=float, default=0)
-    parser.add_argument('--seed', type=int, default=237)
+    parser.add_argument('--seed', type=int, default=20)
     parser.add_argument('--policy_type', type=str, default='linear')
     parser.add_argument('--dir_path', type=str, default='data')
     # for ARS V1 use filter = 'NoFilter'
@@ -27,19 +27,19 @@ def main():
     parser.add_argument('--max_num_steps', type=float, default=1e5)
     # horizon parameters
     parser.add_argument('--h_start', type=int, default=1)
-    parser.add_argument('--h_end', type=int, default=21)
-    parser.add_argument('--h_bin', type=int, default=2)
+    parser.add_argument('--h_end', type=int, default=302)
+    parser.add_argument('--h_bin', type=int, default=20)
     # tuning parameters
-    parser.add_argument('--num_random_seeds', type=int, default=3)
+    parser.add_argument('--num_random_seeds', type=int, default=5)
     # convergence parameters
-    parser.add_argument('--epsilon', type=float, default=2e-2)
+    parser.add_argument('--epsilon', type=float, default=3e-2)
 
     args = parser.parse_args()
     params = vars(args)
 
     ray.init()
 
-    stepsizes = [1e-4, 5e-4, 1e-3, 5e-3, 1e-2]
+    stepsizes = [5e-5, 1e-4, 5e-4, 1e-3, 5e-3, 1e-2]
     num_directions = [1]
     num_top_directions = [1]
     perturbations = [1e-4]
