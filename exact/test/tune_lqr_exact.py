@@ -7,7 +7,7 @@ import pickle
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--env_name', type=str, default='LQR')
-    parser.add_argument('--ob_dim', type=int, default=100)
+    parser.add_argument('--ob_dim', type=int, default=50)
     parser.add_argument('--ac_dim', type=int, default=1)
     parser.add_argument('--n_iter', '-n', type=int, default=1000)
     parser.add_argument('--n_directions', '-nd', type=int, default=8)
@@ -32,17 +32,17 @@ def main():
     # tuning parameters
     parser.add_argument('--num_random_seeds', type=int, default=5)
     # convergence parameters
-    parser.add_argument('--epsilon', type=float, default=3e-2)
+    parser.add_argument('--epsilon', type=float, default=5e-2)
 
     args = parser.parse_args()
     params = vars(args)
 
     ray.init()
 
-    stepsizes = [5e-5, 1e-4, 5e-4, 1e-3, 5e-3, 1e-2, 5e-2]
+    stepsizes = [1e-3, 5e-3, 1e-2, 5e-2]
     num_directions = [1]
     num_top_directions = [1]
-    perturbations = [1e-4]
+    perturbations = [1e-5, 1e-4, 1e-3]
 
     horizons = list(range(args.h_start, args.h_end, args.h_bin))
 
@@ -73,14 +73,14 @@ def main():
                             params['delta_std'] = p
                             print('Seed: %d, Horizon: %d, Step Size: %f, Num directions: %d, Used directions: %d, Perturbation: %f' % (seed, h, s, nd, ntd, p))
                             if not infeasible:                                    
-                                result_table[c] = ray.get(run_exact.remote(params))
+                                result_table[c] = run_exact.remote(params)
                             else:
                                 result_table[c] = ray.put(float('inf'))
                             c += 1
                         infeasible = False
-            # result_table[prev_c:c] = ray.get(result_table[prev_c:c])
-            print(result_table[prev_c:c])
-            prev_c = c
+                        result_table[prev_c:c] = ray.get(result_table[prev_c:c])
+                        print(result_table[prev_c:c])
+                        prev_c = c
 
 
     result_table = np.array(result_table).reshape(len(tune_param_seed), len(horizons), len(stepsizes), len(num_directions), len(num_top_directions), len(perturbations))
