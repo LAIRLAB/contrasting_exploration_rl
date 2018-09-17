@@ -74,21 +74,22 @@ class ExActLearner(object):
         results_one = ray.get(rollout_ids_one)
         results_two = ray.get(rollout_ids_two)
 
-        rollout_rewards, deltas_idx, obs, sampled_ts = [], [], [], []
+        rollout_rewards, deltas_idx, obs = [], [], []
 
         for result in results_one+results_two:
             if not evaluate:
                 self.timesteps += result['steps']
             obs += result['obs']
-            sampled_ts += result['sampled_ts']
             deltas_idx += result['deltas_idx']
             rollout_rewards += result['rollout_rewards']
 
-        deltas_idx, rollout_rewards, obs, sampled_ts = np.array(deltas_idx), np.array(rollout_rewards, dtype=np.float64), np.array(obs), np.array(sampled_ts)
+        deltas_idx, rollout_rewards, obs = np.array(deltas_idx), np.array(rollout_rewards, dtype=np.float64), np.array(obs)
 
         if evaluate:
             return rollout_rewards
 
+        '''
+        # TODO: Do we need this anymore? We are not choosing top directions
         max_rewards = np.max(rollout_rewards, axis=1)
         if self.deltas_used > self.num_deltas:
             self.deltas_used = self.num_deltas
@@ -98,12 +99,13 @@ class ExActLearner(object):
         deltas_idx = deltas_idx[idx]
         rollout_rewards = rollout_rewards[idx, :]
         obs = obs[idx, :]
-        sampled_ts = sampled_ts[idx]
+        '''
 
+        # TODO: Do we need this? 
         rollout_rewards /= np.std(rollout_rewards)
 
         g_hat, count = batched_weighted_sum_jacobian(rollout_rewards[:, 0] - rollout_rewards[:, 1],
-                                                     (self.deltas.get(idx, self.action_size) for idx in deltas_idx),
+                                                     (self.deltas.get(idx, self.action_size * self.rollout_length).reshape(self.action_size, self.rollout_length) for idx in deltas_idx),
                                                      obs,
                                                      batch_size=500)
 
@@ -145,7 +147,7 @@ class ExActLearner(object):
                         logz.log_tabular("cost", cost)
                     logz.dump_tabular()                    
 
-                # Check for convergence for tuning purposes
+            # LQR: Check for convergence for tuning purposes
             if self.close_to_optimal() and self.is_lqr:
                 return self.timesteps
             # get statistics from all workers
@@ -165,13 +167,17 @@ class ExActLearner(object):
             # waiting for increment of all workers
             ray.get(increment_filters_ids)
             i += 1
-        return self.timesteps
+        if not self.is_lqr:
+            # Evaluation
+            rewards = self.aggregate_rollouts(num_rollouts=100, evaluate=True)
+            return np.mean(rewards)
+        else:
+            # LQR: Return timesteps
+            return self.timesteps
 
     def close_to_optimal(self):
         if not self.is_lqr:
             return False
-        # NOTE: Changed to 10%
-        # if np.abs(self.env.evaluate_policy(self.w_policy) - self.env.optimal_cost) / self.env.optimal_cost < 0.10:
         if np.linalg.norm(self.env.evaluate_policy(self.w_policy)[1])**2 < self.params['epsilon']:            
             return True
         return False

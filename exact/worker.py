@@ -32,43 +32,41 @@ class Worker(object):
     def get_weights_plus_stats(self):
         return self.policy.get_weights_plus_stats()
 
-    def rollout(self, shift=0., rollout_length=None, sampled_t=None, noise=None):
+    def rollout(self, shift=0., rollout_length=None, noise=None):
         if rollout_length is None:
             rollout_length = self.rollout_length
 
         perturbation = True
-        if sampled_t is None or noise is None:
+        if noise is None:
             perturbation = False
-        elif sampled_t < 0 or sampled_t >= rollout_length:
-            raise Exception('Invalid sampled time-step')
 
         total_reward = 0
         steps = 0
-        sampled_obs = None
+        obs = []
 
         ob = self.env.reset()
         for i in range(rollout_length):
             action = self.policy.act(ob)
-            if perturbation and i == sampled_t:
-                sampled_obs = ob.copy()
-                ob, reward, done, _ = self.env.step(action + noise)
+            if perturbation:
+                obs.append(ob)
+                noise_t = noise[:, i]
+                ob, reward, done, _ = self.env.step(action + noise_t)
             else:
                 ob, reward, done, _ = self.env.step(action)
             steps += 1
             total_reward += (reward - shift)
             if done:
                 break
-        return total_reward, steps, sampled_obs
+        return total_reward, steps, obs
 
     def do_rollouts(self, w_policy, num_rollouts=1, shift=0., evaluate=False):
-        rollout_rewards, deltas_idx, obs, sampled_ts = [], [], [], []
+        rollout_rewards, deltas_idx, obs = [], [], []
         steps = 0
 
         for i in range(num_rollouts):
             if evaluate:
                 self.policy.update_weights(w_policy)
                 deltas_idx.append(-1)
-                sampled_ts.append(-1)
                 obs.append(-1)
 
                 self.policy.update_filter = False
@@ -77,38 +75,38 @@ class Worker(object):
                 rollout_rewards.append(reward)
             else:
                 self.policy.update_weights(w_policy)
-                idx, delta = self.deltas.get_delta(self.ac_dim)
+                idx, delta = self.deltas.get_delta(self.ac_dim * self.rollout_length)
 
-                delta = (self.delta_std * delta)
+                delta = (self.delta_std * delta).reshape(self.ac_dim, self.rollout_length)
                 deltas_idx.append(idx)
-
-                sampled_t = self.np_random.randint(low=0, high=self.rollout_length)
 
                 self.policy.update_filter = True
                 
                 # self.policy.update_weights(w_policy + delta)
-                pos_reward, pos_steps, pos_obs = self.rollout(shift=shift, sampled_t=sampled_t, noise=delta)
+                pos_reward, pos_steps, pos_obs = self.rollout(shift=shift, noise=delta)
 
                 # self.policy.update_weights(w_policy - delta)
                 if not self.one_point:                    
-                    neg_reward, neg_steps, neg_obs = self.rollout(shift=shift, sampled_t=sampled_t, noise=-delta)
+                    neg_reward, neg_steps, neg_obs = self.rollout(shift=shift, noise=-delta)
                 else:
                     neg_reward = 0.
                     neg_steps = 0.
                     neg_obs = pos_obs.copy()
 
                 if not np.array_equal(pos_obs, neg_obs):
-                    raise NotImplementedError('Only completely deterministic environments are handled')
+                    raise NotImplementedError('Only completely deterministic environments are handled. Use one point for stochastic environments')
 
                 if pos_obs is None or neg_obs is None:
+                    raise Exception('Observation not assigned')
+
+                if len(pos_obs) == 0 or len(neg_obs) == 0:
                     raise Exception('Observation not assigned')
 
                 steps += pos_steps + neg_steps
                 rollout_rewards.append([pos_reward, neg_reward])
                 obs.append(pos_obs)
-                sampled_ts.append(sampled_t)
 
-        return {'deltas_idx': deltas_idx, 'rollout_rewards': rollout_rewards, 'steps': steps, 'obs': obs, 'sampled_ts': sampled_ts}
+        return {'deltas_idx': deltas_idx, 'rollout_rewards': rollout_rewards, 'steps': steps, 'obs': obs}
 
     def stats_increment(self):
         self.policy.observation_filter.stats_increment()

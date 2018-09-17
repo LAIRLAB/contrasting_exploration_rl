@@ -47,11 +47,8 @@ class ARSLearner(object):
                                       deltas_id,
                                       params) for i in range(self.num_workers)]
 
-        if policy_params['type'] == 'linear' and not policy_params['non_stationary']:
+        if policy_params['type'] == 'linear':
             self.policy = LinearPolicy(policy_params, seed=params['seed'])
-            self.w_policy = self.policy.get_weights()
-        elif policy_params['type'] == 'linear' and policy_params['non_stationary']:
-            self.policy = LinearNonStationaryPolicy(policy_params, seed=params['seed'])
             self.w_policy = self.policy.get_weights()
         else:
             raise NotImplementedError
@@ -93,6 +90,7 @@ class ARSLearner(object):
         if evaluate:
             return rollout_rewards
 
+        # TODO: Do we need this anymore? We are not choosing top directions
         max_rewards = np.max(rollout_rewards, axis=1)
         if self.deltas_used > self.num_deltas:
             self.deltas_used = self.num_deltas
@@ -101,6 +99,7 @@ class ARSLearner(object):
         deltas_idx = deltas_idx[idx]
         rollout_rewards = rollout_rewards[idx, :]
 
+        # TODO: Do we need this? 
         rollout_rewards /= np.std(rollout_rewards)
 
         g_hat, count = batched_weighted_sum(rollout_rewards[:, 0] - rollout_rewards[:, 1],
@@ -140,11 +139,11 @@ class ARSLearner(object):
                     logz.log_tabular("MinRewardRollout", np.min(rewards))
                     logz.log_tabular("timesteps", self.timesteps)
                     if self.is_lqr:
-                        cost = self.env.evaluate_policy(self.w_policy, self.policy_params['non_stationary'])[0]
+                        cost = self.env.evaluate_policy(self.w_policy)[0]
                         logz.log_tabular("optimal cost", self.env.optimal_cost)
                         logz.log_tabular("cost", cost)
                     logz.dump_tabular()
-            # Check for convergence
+            # LQR: Check for convergence
             if self.close_to_optimal() and self.is_lqr:
                 return self.timesteps
 
@@ -169,14 +168,14 @@ class ARSLearner(object):
             # Evaluation
             rewards = self.aggregate_rollouts(num_rollouts=100, evaluate=True)
             return np.mean(rewards)
-        else:            
+        else:
+            # LQR: return timesteps
             return self.timesteps
         
 
     def close_to_optimal(self):
         if not self.is_lqr:
             return False
-        # if np.abs(self.env.evaluate_policy(self.w_policy, self.policy_params['non_stationary']) - self.env.optimal_cost) / self.env.optimal_cost < 0.10:
         if np.linalg.norm(self.env.evaluate_policy(self.w_policy)[1])**2 < self.params['epsilon']:            
             return True
         return False
