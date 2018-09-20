@@ -11,7 +11,7 @@ def main():
     parser.add_argument('--deltas_used', '-du', type=int, default=1)
     parser.add_argument('--step_size', '-s', type=float, default=0.02)
     parser.add_argument('--delta_std', '-std', type=float, default=1e-2)
-    parser.add_argument('--n_workers', '-e', type=int, default=1)
+    parser.add_argument('--n_workers', '-e', type=int, default=5)
     parser.add_argument('--rollout_length', '-r', type=int, default=10)
     parser.add_argument('--shift', type=float, default=0)
     parser.add_argument('--seed', type=int, default=237)
@@ -65,10 +65,10 @@ def main():
                     for p in perturbations:
                         params['delta_std'] = p
                         print('Seed: %d, Horizon: %d, Step Size: %f, Num directions: %d, Used directions: %d, Perturbation: %f' % (seed, h, s, nd, ntd, p))
-                        result_table[c] = run_exact.remote(params)
+                        result_table[c] = ray.get(run_exact.remote(params))
                         c += 1
                 
-                    result_table[prev_c:c] = ray.get(result_table[prev_c:c])
+                    #result_table[prev_c:c] = ray.get(result_table[prev_c:c])
                     print(result_table[prev_c:c])
                     prev_c = c
 
