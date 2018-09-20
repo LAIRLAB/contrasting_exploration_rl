@@ -90,6 +90,7 @@ class ARSLearner(object):
         if evaluate:
             return rollout_rewards
 
+        '''
         # TODO: Do we need this anymore? We are not choosing top directions
         max_rewards = np.max(rollout_rewards, axis=1)
         if self.deltas_used > self.num_deltas:
@@ -98,6 +99,7 @@ class ARSLearner(object):
         idx = np.arange(max_rewards.size)[max_rewards >= np.percentile(max_rewards, 100 * (1 - self.deltas_used / self.num_deltas))]
         deltas_idx = deltas_idx[idx]
         rollout_rewards = rollout_rewards[idx, :]
+        '''
 
         # TODO: Do we need this? 
         rollout_rewards /= np.std(rollout_rewards)
@@ -199,7 +201,6 @@ def run_ars(params):
                    'ob_filter':params['filter'],
                    'ob_dim':ob_dim,
                    'ac_dim':ac_dim,
-                   'non_stationary':params['non_stationary'],
                    'H': params['rollout_length']}
 
     ARS = ARSLearner(policy_params=policy_params,

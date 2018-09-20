@@ -49,7 +49,7 @@ class Worker(object):
             action = self.policy.act(ob)
             if perturbation:
                 obs.append(ob)
-                noise_t = noise[:, i]
+                noise_t = noise[i, :]
                 ob, reward, done, _ = self.env.step(action + noise_t)
             else:
                 ob, reward, done, _ = self.env.step(action)
@@ -77,7 +77,7 @@ class Worker(object):
                 self.policy.update_weights(w_policy)
                 idx, delta = self.deltas.get_delta(self.ac_dim * self.rollout_length)
 
-                delta = (self.delta_std * delta).reshape(self.ac_dim, self.rollout_length)
+                delta = (self.delta_std * delta).reshape(self.rollout_length, self.ac_dim)
                 deltas_idx.append(idx)
 
                 self.policy.update_filter = True

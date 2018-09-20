@@ -34,6 +34,7 @@ class ExActLearner(object):
         self.num_episodes_used = float('inf')
         self.seed = params['seed']
         self.tuning = params['tuning']
+        self.one_point = params['one_point']
 
         deltas_id = create_shared_noise.remote()
         self.deltas = SharedNoiseTable(ray.get(deltas_id), seed=self.seed+3)
@@ -101,16 +102,15 @@ class ExActLearner(object):
         obs = obs[idx, :]
         '''
 
-        # TODO: Do we need this? 
-        rollout_rewards /= np.std(rollout_rewards)
+        # rollout_rewards /= np.std(rollout_rewards)
 
         g_hat, count = batched_weighted_sum_jacobian(rollout_rewards[:, 0] - rollout_rewards[:, 1],
-                                                     (self.deltas.get(idx, self.action_size * self.rollout_length).reshape(self.action_size, self.rollout_length) for idx in deltas_idx),
+                                                     (self.deltas.get(idx, self.action_size * self.rollout_length).reshape(self.rollout_length, self.action_size) for idx in deltas_idx),
                                                      obs,
                                                      batch_size=500)
 
         g_hat /= deltas_idx.size
-        return g_hat
+        return g_hat.flatten()
 
     def train_step(self):
         g_hat = self.aggregate_rollouts()
@@ -125,7 +125,7 @@ class ExActLearner(object):
         while self.timesteps < max_num_steps:            
             self.train_step()
 
-            if ((i+1) % 10 == 0):
+            if ((i+1) % 100 == 0):
 
                 if not self.tuning:
                     
