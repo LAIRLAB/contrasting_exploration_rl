@@ -21,7 +21,7 @@ def main():
     parser.add_argument('--filter', type=str, default='NoFilter')
     parser.add_argument('--one_point', action='store_true')
     parser.add_argument('--tuning', action='store_true')
-    parser.add_argument('--max_num_steps', type=int, default=5e5)
+    parser.add_argument('--max_num_steps', type=int, default=1e4)
     parser.add_argument('--non_stationary', action='store_true')
     # horizon parameters
     parser.add_argument('--h_start', type=int, default=1)
@@ -57,6 +57,7 @@ def main():
         params['seed'] = seed
         for h in horizons:
             params['rollout_length'] = h
+            params['max_num_steps'] = 1e4 * h
             for s in stepsizes:
                 params['step_size'] = s
                 for nd in directions:
