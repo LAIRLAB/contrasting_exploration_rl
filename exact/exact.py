@@ -51,7 +51,8 @@ class ExActLearner(object):
         else:
             raise NotImplementedError
 
-        self.optimizer = optimizers.SGD(self.w_policy, self.step_size)
+        # self.optimizer = optimizers.SGD(self.w_policy, self.step_size)
+        self.optimizer = optimizers.Adam(self.w_policy, self.step_size)
 
     def aggregate_rollouts(self, num_rollouts=None, evaluate=False):
 
@@ -101,8 +102,8 @@ class ExActLearner(object):
         rollout_rewards = rollout_rewards[idx, :]
         obs = obs[idx, :]
         '''
-
-        # rollout_rewards /= np.std(rollout_rewards)
+        if self.num_deltas > 1:
+            rollout_rewards /= np.std(rollout_rewards)
 
         g_hat, count = batched_weighted_sum_jacobian(rollout_rewards[:, 0] - rollout_rewards[:, 1],
                                                      (self.deltas.get(idx, self.action_size * self.rollout_length).reshape(self.rollout_length, self.action_size) for idx in deltas_idx),

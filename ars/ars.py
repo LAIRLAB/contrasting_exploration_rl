@@ -53,7 +53,8 @@ class ARSLearner(object):
         else:
             raise NotImplementedError
 
-        self.optimizer = optimizers.SGD(self.w_policy, self.step_size)
+        # self.optimizer = optimizers.SGD(self.w_policy, self.step_size)
+        self.optimizer = optimizers.Adam(self.w_policy, self.step_size)
 
     def aggregate_rollouts(self, num_rollouts=None, evaluate=False):
 
@@ -101,8 +102,9 @@ class ARSLearner(object):
         rollout_rewards = rollout_rewards[idx, :]
         '''
 
-        # TODO: Do we need this? 
-        rollout_rewards /= np.std(rollout_rewards)
+        # TODO: Do we need this?
+        if self.num_deltas > 1:            
+            rollout_rewards /= np.std(rollout_rewards)
 
         g_hat, count = batched_weighted_sum(rollout_rewards[:, 0] - rollout_rewards[:, 1],
                                             (self.deltas.get(idx, self.w_policy.size) for idx in deltas_idx),

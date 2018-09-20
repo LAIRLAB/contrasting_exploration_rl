@@ -34,3 +34,29 @@ class SGD(Optimizer):
     def _compute_step(self, globalg):
         step = -self.stepsize * globalg
         return step
+
+
+class Adam(Optimizer):
+    def __init__(self, pi, stepsize):
+        Optimizer.__init__(self, pi)
+        self.alpha = stepsize
+        self.beta_1 = 0.9
+        self.beta_2 = 0.999
+        self.epsilon = 1e-8
+        self.gamma = 1 - 1e-8
+
+        self.m_t = np.zeros(self.dim)
+        self.v_t = np.zeros(self.dim)
+        self.t = 0
+
+    def _compute_step(self, globalg):
+        self.t += 1
+        self.beta_1_t = self.beta_1 * (self.gamma ** (self.t - 1))
+        self.m_t = self.beta_1_t * self.m_t + (1 - self.beta_1_t) * globalg
+        self.v_t = self.beta_2 * self.v_t + (1 - self.beta_2) * (globalg**2)
+
+        m_cap = self.m_t / (1 - (self.beta_1**self.t))
+        v_cap = self.v_t / (1 - (self.beta_2**self.t))
+        
+        step = - (self.alpha * m_cap) / (np.sqrt(v_cap) + self.epsilon)
+        return step
