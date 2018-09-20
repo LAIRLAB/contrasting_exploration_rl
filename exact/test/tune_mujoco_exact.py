@@ -35,9 +35,9 @@ def main():
 
     ray.init()
 
-    stepsizes = [1e-2, 5e-2, 1e-3, 5e-3]
+    stepsizes = [1e-3, 3e-3, 5e-3, 8e-3, 1e-4]
     directions = [5, 10, 20]
-    perturbations = [0.005, 0.01, 0.05]
+    perturbations = [0.03, 0.05, 0.08, 0.1]
     horizons = list(range(args.h_start, args.h_end, args.h_bin))
     # FIX: Using just 1 direction, no normalization and 0.01 perturbation
 
@@ -66,10 +66,10 @@ def main():
                     for p in perturbations:
                         params['delta_std'] = p
                         print('Seed: %d, Horizon: %d, Step Size: %f, Num directions: %d, Used directions: %d, Perturbation: %f' % (seed, h, s, nd, ntd, p))
-                        result_table[c] = ray.get(run_exact.remote(params))
+                        result_table[c] = run_exact.remote(params)
                         c += 1
                 
-                    #result_table[prev_c:c] = ray.get(result_table[prev_c:c])
+                    result_table[prev_c:c] = ray.get(result_table[prev_c:c])
                     print(result_table[prev_c:c])
                     prev_c = c
 
