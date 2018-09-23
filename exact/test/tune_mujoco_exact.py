@@ -11,7 +11,7 @@ def main():
     parser.add_argument('--deltas_used', '-du', type=int, default=1)
     parser.add_argument('--step_size', '-s', type=float, default=0.02)
     parser.add_argument('--delta_std', '-std', type=float, default=1e-2)
-    parser.add_argument('--n_workers', '-e', type=int, default=5)
+    parser.add_argument('--n_workers', '-e', type=int, default=1)
     parser.add_argument('--rollout_length', '-r', type=int, default=10)
     parser.add_argument('--shift', type=float, default=0)
     parser.add_argument('--seed', type=int, default=237)
@@ -81,7 +81,7 @@ def main():
     nd = np.array(directions)[max_indices[:, 1]]
     ntd = nd
     pt = np.array(perturbations)[max_indices[:, 2]]
-    filename = 'data/ars_tuning_'+str(params['env_name'])+'_'+ str(args.h_start) + '_' + str(args.h_end) + '_' + str(args.h_bin) +'.pkl'
+    filename = 'data/exact_tuning_'+str(params['env_name'])+'_'+ str(args.h_start) + '_' + str(args.h_end) + '_' + str(args.h_bin) +'.pkl'
     pickle.dump((result_table, (ss, nd, ntd, pt)), open(filename, 'wb'))
 
 if __name__ == '__main__':
