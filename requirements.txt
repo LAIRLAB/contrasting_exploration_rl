@@ -5,3 +5,4 @@ gym
 scipy
 jupyter
 autograd
+mujoco-py

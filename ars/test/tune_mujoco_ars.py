@@ -35,10 +35,18 @@ def main():
 
     ray.init()
 
-    stepsizes = [3e-2, 5e-2, 8e-2, 1e-1, 1.5e-1]
-    directions = [5, 10, 20]
-    # perturbations = [0.03, 0.05, 0.08, 0.1]
-    perturbations = [0.05, 0.1, 0.15, 0.2]
+    if params['env_name'] == 'Swimmer-v2':        
+        # @swimmer
+        stepsizes = [3e-2, 5e-2, 8e-2, 1e-1, 1.5e-1]
+        directions = [5, 10, 20]
+        perturbations = [0.05, 0.1, 0.15, 0.2]
+    elif params['env_name'] == 'HalfCheetah-v2':        
+        # @halfcheetah
+        stepsizes = [1e-3, 3e-3, 5e-3, 8e-3, 1e-2]
+        directions = [5, 10, 20]
+        perturbations = [0.01, 0.03, 0.05, 0.08]
+    else:
+        raise NotImplementedError
     
     horizons = list(range(args.h_start, args.h_end, args.h_bin))
 
