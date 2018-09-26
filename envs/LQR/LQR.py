@@ -6,59 +6,25 @@ import scipy.linalg as LA
 import autograd.numpy as anp
 from autograd import grad
 
-def finite_LQR_solver(A,B,Q,R,T, x_0):
-  x_dim = A.shape[0]
-  a_dim = B.shape[1]
-  P = np.zeros((x_dim, x_dim))    
-  
-  for i in range(T):
-    P = (A.T.dot(P).dot(A) + Q 
-         - A.T.dot(P).dot(B).dot(LA.inv(B.T.dot(P).dot(B)+R)).dot(B.T).dot(P).dot(A))
-    
-  return x_0.dot(P).dot(x_0)
-  
-def finite_K_cost(A, B, Q, R, K, T, x_0, non_stationary=False):
-  x_dim = A.shape[0]
-  a_dim = B.shape[1]
-  P = np.zeros((x_dim,x_dim))
-  total_c = 0
-  x = x_0
-  for i in range(T):
-    if non_stationary:
-      u = K[i, :].dot(x)
-    else:      
-      u = K.dot(x)
-    total_c += x.dot(Q).dot(x) + u.dot(R).dot(u)
-    x = A.dot(x) + B.dot(u)
-  return total_c
-
-def finite_K_gradient(A, B, Q, R, K, T, x_0):
-  x_dim = A.shape[0]
-  a_dim = B.shape[1]
-  def cost(w):
-    total_c = 0
-    x = x_0
-    for i in range(T):
-      u = anp.dot(w, x)  # w.dot(x)
-      total_c += anp.dot(x, anp.dot(Q, x)) + anp.dot(u, anp.dot(R, u)) # x.dot(Q).dot(x) + u.dot(R).dot(u)
-      x = anp.dot(A, x) + anp.dot(B, u)  # A.dot(x) + B.dot(u)
-    return total_c
-  grad_cost = grad(cost)
-  return grad_cost(K)
-      
 
 class LQREnv(gym.Env):
 
-    def __init__(self, x_dim, u_dim=1, seed=100, T=10):
+    def __init__(self, x_dim=100, u_dim=10, seed=100, T=10, noise_cov=0.01):
       super(LQREnv, self).__init__()
       self.np_random, seed = seeding.np_random(seed)
       
-      self.A = np.zeros((x_dim, x_dim))
-      tmpA = self.np_random.randn(x_dim, x_dim)
-      A = tmpA.T.dot(tmpA)
-      s, U = np.linalg.eig(A)
-      s = s / np.linalg.norm(s)
-      self.A = U.dot(np.diag(s)).dot(U.T)
+      self.A = np.eye(x_dim)
+      for i in range(x_dim):
+        for j in range(x_dim):
+          if i == j:
+            if i > 0 and i < x_dim-1:
+              self.A[i-1, j] = self.A[i+1, j] = 0.01
+            elif i == 0:
+              self.A[i+1, j] = 0.01
+            else:
+              self.A[i-1, j] = 0.01
+          else:
+            continue
       
       self.B = np.ones((x_dim, u_dim))
       self.Q = np.eye(x_dim) / 1000
@@ -70,23 +36,20 @@ class LQREnv(gym.Env):
       self.observation_space = gym_box.Box(low = -np.inf, high = np.inf, shape = (x_dim, ), dtype=np.float32)
       self.action_space = gym_box.Box(low = -np.inf, high = np.inf, shape = (u_dim, ), dtype=np.float32)
       
-      self.init_state = self.np_random.randn(x_dim)
+      self.init_state = self.np_random.normal(0, 1, size=x_dim)
       
       self.state = self.init_state.copy()
-      self.noise_cov = np.eye(self.x_dim)*0.01
+      self.noise_cov = noise_cov
       
       self.T = T
       
-      self.optimal_cost = finite_LQR_solver(self.A,self.B, self.Q,self.R, self.T, 
-                                            self.init_state)
-
       def cost(w):
         total_c = 0
         x = self.init_state
         for i in range(self.T):
           u = anp.dot(w, x)  # w.dot(x)
-          total_c += anp.dot(x, anp.dot(self.Q, x)) + anp.dot(u, anp.dot(self.R, u)) # x.dot(Q).dot(x) + u.dot(R).dot(u)
-          x = anp.dot(self.A, x) + anp.dot(self.B, u)  # A.dot(x) + B.dot(u)
+          total_c += anp.dot(x, anp.dot(self.Q, x)) + anp.dot(u, anp.dot(self.R, u)) 
+          x = anp.dot(self.A, x) + anp.dot(self.B, u) + self.np_random.normal(0, self.noise_cov, size=x_dim)
         return total_c
 
       self.grad_func = grad(cost)
@@ -101,8 +64,8 @@ class LQREnv(gym.Env):
     def step(self, a): 
       
       cost = self.state.dot(self.Q).dot(self.state) + a.dot(self.R).dot(a)
-      next_state = self.A.dot(self.state.reshape((self.x_dim, 1))) + self.B.dot(a.reshape((self.a_dim, 1)));
-      self.state = next_state.reshape(self.x_dim)
+      next_state = np.dot(self.A, self.state) + np.dot(self.B, a) + self.np_random.normal(0, self.noise_cov, size=self.x_dim)
+      self.state = next_state.copy()
 
       done = False
       self.t += 1
@@ -114,8 +77,5 @@ class LQREnv(gym.Env):
       pass 
 
     def evaluate_policy(self, K, non_stationary=False):
-      cost_for_K = finite_K_cost(self.A,self.B,self.Q, self.R, K, 
-                                 self.T, self.init_state, non_stationary=non_stationary)
-
       gradient_of_K = self.grad_func(K)
-      return cost_for_K, gradient_of_K
+      return gradient_of_K
