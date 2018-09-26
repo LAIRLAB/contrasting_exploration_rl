@@ -35,9 +35,9 @@ def main():
 
     ray.init()
 
-    stepsizes = [1e-3, 3e-3, 5e-3, 8e-3, 1e-4]
+    stepsizes = [5e-3, 8e-3, 1e-2, 1.5e-2, 2e-2]
     directions = [5, 10, 20]
-    perturbations = [0.03, 0.05, 0.08, 0.1]
+    perturbations = [0.05, 0.1, 0.15, 0.2]
     horizons = list(range(args.h_start, args.h_end, args.h_bin))
     # FIX: Using just 1 direction, no normalization and 0.01 perturbation
 
