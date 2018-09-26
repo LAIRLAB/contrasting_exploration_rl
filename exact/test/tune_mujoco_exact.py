@@ -11,7 +11,7 @@ def main():
     parser.add_argument('--deltas_used', '-du', type=int, default=1)
     parser.add_argument('--step_size', '-s', type=float, default=0.02)
     parser.add_argument('--delta_std', '-std', type=float, default=1e-2)
-    parser.add_argument('--n_workers', '-e', type=int, default=1)
+    parser.add_argument('--n_workers', '-e', type=int, default=2)
     parser.add_argument('--rollout_length', '-r', type=int, default=10)
     parser.add_argument('--shift', type=float, default=0)
     parser.add_argument('--seed', type=int, default=237)
@@ -25,10 +25,10 @@ def main():
     parser.add_argument('--non_stationary', action='store_true')
     # horizon parameters
     parser.add_argument('--h_start', type=int, default=1)
-    parser.add_argument('--h_end', type=int, default=202)
-    parser.add_argument('--h_bin', type=int, default=20)
+    parser.add_argument('--h_end', type=int, default=16)
+    parser.add_argument('--h_bin', type=int, default=1)
     # tuning parameters
-    parser.add_argument('--num_random_seeds', type=int, default=3)
+    parser.add_argument('--num_random_seeds', type=int, default=5)
 
     args = parser.parse_args()
     params = vars(args)
@@ -38,9 +38,8 @@ def main():
     stepsizes = [5e-3, 8e-3, 1e-2, 1.5e-2, 2e-2]
     directions = [5, 10, 20]
     perturbations = [0.05, 0.1, 0.15, 0.2]
+    
     horizons = list(range(args.h_start, args.h_end, args.h_bin))
-    # FIX: Using just 1 direction, no normalization and 0.01 perturbation
-
 
     initial_seed = 100
     np.random.seed(params['seed'])
