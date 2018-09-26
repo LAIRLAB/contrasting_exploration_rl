@@ -33,6 +33,8 @@ def main():
     args = parser.parse_args()
     params = vars(args)
 
+    params['one_point'] = True
+
     ray.init()
 
     filename = 'data/exact_tuning_'+params['env_name']+'_' + str(args.h_start) + '_' + str(args.h_end) + '_' + str(args.h_bin) +'.pkl'
