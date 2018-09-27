@@ -142,10 +142,10 @@ class ARSLearner(object):
                     logz.log_tabular("MaxRewardRollout", np.max(rewards))
                     logz.log_tabular("MinRewardRollout", np.min(rewards))
                     logz.log_tabular("timesteps", self.timesteps)
-                    if self.is_lqr:
-                        cost = self.env.evaluate_policy(self.w_policy)[0]
-                        logz.log_tabular("optimal cost", self.env.optimal_cost)
-                        logz.log_tabular("cost", cost)
+                    #if self.is_lqr:
+                    #    cost = self.env.evaluate_policy(self.w_policy)[0]
+                    #    logz.log_tabular("optimal cost", self.env.optimal_cost)
+                    #    logz.log_tabular("cost", cost)
                     logz.dump_tabular()
             # LQR: Check for convergence
             if self.close_to_optimal() and self.is_lqr:
@@ -180,7 +180,7 @@ class ARSLearner(object):
     def close_to_optimal(self):
         if not self.is_lqr:
             return False
-        if np.linalg.norm(self.env.evaluate_policy(self.w_policy)[1])**2 < self.params['epsilon']:            
+        if np.linalg.norm(self.env.evaluate_policy(self.w_policy))**2 < self.params['epsilon']:            
             return True
         return False
 

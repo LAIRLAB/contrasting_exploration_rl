@@ -13,7 +13,7 @@ class LQREnv(gym.Env):
       super(LQREnv, self).__init__()
       self.np_random, seed = seeding.np_random(seed)
       
-      self.A = np.eye(x_dim)
+      self.A = np.eye(x_dim) * 0.9
       for i in range(x_dim):
         for j in range(x_dim):
           if i == j:
@@ -45,7 +45,7 @@ class LQREnv(gym.Env):
       
       def cost(w):
         total_c = 0
-        x = self.init_state
+        x = anp.copy(self.init_state)
         for i in range(self.T):
           u = anp.dot(w, x)  # w.dot(x)
           total_c += anp.dot(x, anp.dot(self.Q, x)) + anp.dot(u, anp.dot(self.R, u)) 
@@ -57,7 +57,7 @@ class LQREnv(gym.Env):
       self.reset()
       
     def reset(self):
-      self.state = self.init_state.copy()
+      self.state = self.np_random.normal(0, 1, size=self.x_dim)  # self.init_state.copy()
       self.t = 0
       return self.state
 
