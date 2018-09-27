@@ -31,7 +31,7 @@ def main():
     # parser.add_argument('--h_end', type=int, default=302)
     # parser.add_argument('--h_bin', type=int, default=20)
     # tuning parameters
-    parser.add_argument('--num_random_seeds', type=int, default=5)
+    parser.add_argument('--num_random_seeds', type=int, default=3)
     # Convergence parameters
     parser.add_argument('--epsilon', type=float, default=5e-2)
     parser.add_argument('--noise_cov', type=float, default=0.01)
@@ -41,13 +41,13 @@ def main():
 
     ray.init()
 
-    stepsizes = [1e-4, 5e-4, 1e-3, 5e-3]
+    stepsizes = [1e-4, 3e-4, 5e-4, 8e-4, 1e-3, 3e-3, 5e-3, 8e-3, 1e-2]
     num_directions = [10]
     num_top_directions = [10]
     perturbations = [0.01, 0.05, 0.1]
 
     # horizons = list(range(args.h_start, args.h_end, args.h_bin))
-    noise_cov = [1e-3, 5e-3, 1e-2, 5e-2, 1e-1]
+    noise_cov = [1e-4, 5e-4, 1e-3, 5e-3, 1e-2, 5e-2, 1e-1, 5e-1]
 
     initial_seed = 100
     np.random.seed(params['seed'])
