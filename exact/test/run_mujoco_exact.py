@@ -27,8 +27,7 @@ def main():
     parser.add_argument('--h_start', type=int, default=1)
     parser.add_argument('--h_end', type=int, default=202)
     parser.add_argument('--h_bin', type=int, default=20)
-    # tuning parameters
-    parser.add_argument('--num_random_seeds', type=int, default=3)
+
 
     args = parser.parse_args()
     params = vars(args)
