@@ -1,7 +1,6 @@
 *.pyc
 data
 .DS_Store
-*.pkl
 MUJOCO_LOG.TXT
 *-info
 reinforce/lin_reinforce_sigma.py
