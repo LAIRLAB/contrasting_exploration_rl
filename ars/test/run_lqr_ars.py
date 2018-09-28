@@ -58,13 +58,13 @@ def main():
     for seed_id, seed in enumerate(test_param_seed):
         params['seed'] = seed
         for nc_id, nc in enumerate(noise_cov):
-            params['step_size'] = ss[h_id]
-            params['n_directions'] = nd[h_id]
-            params['deltas_used'] = ntd[h_id]
-            params['delta_std'] = pt[h_id]
+            params['step_size'] = ss[nc_id]
+            params['n_directions'] = nd[nc_id]
+            params['deltas_used'] = ntd[nc_id]
+            params['delta_std'] = pt[nc_id]
             params['noise_cov'] = nc
-            print('Seed: %d, Noise cov: %f, Step Size: %f, Num directions: %d, Used directions: %d, Perturbation: %f' % (seed, nc, ss[h_id], nd[h_id], ntd[h_id], pt[h_id]))
-            result_table[seed_id, h_id] = ray.get(run_ars.remote(params))
+            print('Seed: %d, Noise cov: %f, Step Size: %f, Num directions: %d, Used directions: %d, Perturbation: %f' % (seed, nc, ss[nc_id], nd[nc_id], ntd[nc_id], pt[nc_id]))
+            result_table[seed_id, nc_id] = ray.get(run_ars.remote(params))
 
     filename = 'data/ars_results_lqr.pkl'
     pickle.dump(result_table, open(filename, 'wb'))
