@@ -142,10 +142,10 @@ class ExActLearner(object):
                     logz.log_tabular("MaxRewardRollout", np.max(rewards))
                     logz.log_tabular("MinRewardRollout", np.min(rewards))
                     logz.log_tabular("timesteps", self.timesteps)
-                    if self.params['env_name'] == 'LQR':
-                        cost = self.env.evaluate_policy(self.w_policy)[0]
-                        logz.log_tabular("optimal cost", self.env.optimal_cost)
-                        logz.log_tabular("cost", cost)
+                    #if self.params['env_name'] == 'LQR':
+                    #    cost = self.env.evaluate_policy(self.w_policy)[0]
+                    #    logz.log_tabular("optimal cost", self.env.optimal_cost)
+                    #    logz.log_tabular("cost", cost)
                     logz.dump_tabular()                    
 
             # LQR: Check for convergence for tuning purposes
@@ -179,7 +179,7 @@ class ExActLearner(object):
     def close_to_optimal(self):
         if not self.is_lqr:
             return False
-        if np.linalg.norm(self.env.evaluate_policy(self.w_policy)[1])**2 < self.params['epsilon']:            
+        if np.linalg.norm(self.env.evaluate_policy(self.w_policy))**2 < self.params['epsilon']:            
             return True
         return False
 
@@ -206,4 +206,6 @@ def run_exact(params):
                      logdir=logdir,
                      params=params)                     
         
-    return ExAct.train(params['max_num_steps'])
+    num_steps = ExAct.train(params['max_num_steps'])
+
+    return num_steps

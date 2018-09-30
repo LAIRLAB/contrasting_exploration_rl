@@ -37,7 +37,7 @@ def batched_weighted_sum_jacobian(weights, vecs, obs, batch_size):
 
 def make_env(params, seed):
     if params['env_name'] == 'LQR':
-        env = LQREnv(x_dim=params['ob_dim'], u_dim=params['ac_dim'], seed=seed, T=params['rollout_length'])
+        env = LQREnv(x_dim=params['ob_dim'], u_dim=params['ac_dim'], seed=seed, T=params['rollout_length'], noise_cov=params['noise_cov'])
         return env
     else:
         env = gym.make(params['env_name'])
