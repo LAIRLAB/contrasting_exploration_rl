@@ -26,8 +26,8 @@ def main():
     parser.add_argument('--non_stationary', action='store_true')
     # horizon parameters
     parser.add_argument('--h_start', type=int, default=1)
-    parser.add_argument('--h_end', type=int, default=202)
-    parser.add_argument('--h_bin', type=int, default=20)
+    parser.add_argument('--h_end', type=int, default=16)
+    parser.add_argument('--h_bin', type=int, default=1)
 
 
     args = parser.parse_args()
