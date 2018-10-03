@@ -54,7 +54,7 @@ class Worker(object):
                 ob, reward, done, _ = self.env.step(action + noise_t)
             elif perturbation and self.coord_descent:
                 if i == sampled_t:
-                    obs.append(ob)
+                    obs = ob.copy()
                     ob, reward, done, _ = self.env.step(action + noise)
                 else:
                     ob, reward, done, _ = self.env.step(action)
@@ -113,8 +113,8 @@ class Worker(object):
                 if pos_obs is None or neg_obs is None:
                     raise Exception('Observation not assigned')
 
-                if len(pos_obs) == 0 or len(neg_obs) == 0:
-                    raise Exception('Observation not assigned')
+                #if len(pos_obs) == 0 or len(neg_obs) == 0:
+                #    raise Exception('Observation not assigned')
 
                 steps += pos_steps + neg_steps
                 rollout_rewards.append([pos_reward, neg_reward])
