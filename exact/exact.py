@@ -118,7 +118,8 @@ class ExActLearner(object):
         g_hat, count = batched_weighted_sum_jacobian(rollout_rewards[:, 0] - rollout_rewards[:, 1],
                                                      (self.deltas.get(idx, delta_dim).reshape(delta_shape) for idx in deltas_idx),
                                                      obs,
-                                                     batch_size=500)
+                                                     batch_size=500,
+                                                     coord_descent=self.coord_descent)
 
         g_hat /= deltas_idx.size
         return g_hat.flatten()
