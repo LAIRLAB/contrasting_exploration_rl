@@ -25,6 +25,7 @@ class Worker(object):
         self.delta_std = params['delta_std']
         self.rollout_length = params['rollout_length']
         self.one_point = params['one_point']
+        self.coord_descent = params['coord_descent']
         self.seed = seed
         self.params = params
         self.np_random, _ = seeding.np_random(seed)
@@ -32,7 +33,7 @@ class Worker(object):
     def get_weights_plus_stats(self):
         return self.policy.get_weights_plus_stats()
 
-    def rollout(self, shift=0., rollout_length=None, noise=None):
+    def rollout(self, shift=0., rollout_length=None, noise=None, sampled_t=None):
         if rollout_length is None:
             rollout_length = self.rollout_length
 
@@ -47,10 +48,16 @@ class Worker(object):
         ob = self.env.reset()
         for i in range(rollout_length):
             action = self.policy.act(ob)
-            if perturbation:
+            if perturbation and not self.coord_descent:
                 obs.append(ob)
                 noise_t = noise[i, :]
                 ob, reward, done, _ = self.env.step(action + noise_t)
+            elif perturbation and self.coord_descent:
+                if i == sampled_t:
+                    obs.append(ob)
+                    ob, reward, done, _ = self.env.step(action + noise)
+                else:
+                    ob, reward, done, _ = self.env.step(action)
             else:
                 ob, reward, done, _ = self.env.step(action)
             steps += 1
@@ -75,19 +82,26 @@ class Worker(object):
                 rollout_rewards.append(reward)
             else:
                 self.policy.update_weights(w_policy)
-                idx, delta = self.deltas.get_delta(self.ac_dim * self.rollout_length)
 
-                delta = (self.delta_std * delta).reshape(self.rollout_length, self.ac_dim)
+                sampled_t = None
+                if not self.coord_descent:                    
+                    idx, delta = self.deltas.get_delta(self.ac_dim * self.rollout_length)
+                    delta = (self.delta_std * delta).reshape(self.rollout_length, self.ac_dim)
+                else:
+                    idx, delta = self.deltas.get_delta(self.ac_dim)
+                    delta = self.delta_std * delta
+                    sampled_t = self.np_random.randint(low=0, high=self.rollout_length)
+
                 deltas_idx.append(idx)
 
                 self.policy.update_filter = True
                 
                 # self.policy.update_weights(w_policy + delta)
-                pos_reward, pos_steps, pos_obs = self.rollout(shift=shift, noise=delta)
+                pos_reward, pos_steps, pos_obs = self.rollout(shift=shift, noise=delta, sampled_t=sampled_t)
 
                 # self.policy.update_weights(w_policy - delta)
                 if not self.one_point:                    
-                    neg_reward, neg_steps, neg_obs = self.rollout(shift=shift, noise=-delta)
+                    neg_reward, neg_steps, neg_obs = self.rollout(shift=shift, noise=-delta, sampled_t=sampled_t)
                 else:
                     neg_reward = 0.
                     neg_steps = 0.

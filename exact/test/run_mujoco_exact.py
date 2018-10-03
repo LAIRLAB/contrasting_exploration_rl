@@ -20,6 +20,7 @@ def main():
     # for ARS V1 use filter = 'NoFilter'
     parser.add_argument('--filter', type=str, default='NoFilter')
     parser.add_argument('--one_point', action='store_true')
+    parser.add_argument('--coord_descent', action='store_true')
     parser.add_argument('--tuning', action='store_true')
     parser.add_argument('--max_num_steps', type=int, default=1e4)
     parser.add_argument('--non_stationary', action='store_true')
@@ -33,6 +34,7 @@ def main():
     params = vars(args)
 
     params['one_point'] = True
+    params['coord_descent'] = True
 
     ray.init()
 

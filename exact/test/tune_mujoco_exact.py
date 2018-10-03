@@ -23,6 +23,7 @@ def main():
     parser.add_argument('--tuning', action='store_true')
     parser.add_argument('--max_num_steps', type=int, default=1e4)
     parser.add_argument('--non_stationary', action='store_true')
+    parser.add_argument('--coord_descent', action='store_true')
     # horizon parameters
     parser.add_argument('--h_start', type=int, default=1)
     parser.add_argument('--h_end', type=int, default=16)
@@ -55,6 +56,7 @@ def main():
     tune_param_seed = list(np.random.randint(low = 1, high = 1e8,size=args.num_random_seeds))
     params['tuning'] = True
     params['one_point'] = True
+    params['coord_descent'] = True
     
     result_table = np.zeros((len(tune_param_seed), len(horizons), len(stepsizes), len(directions), len(perturbations)))
     result_table = list(result_table.flatten())

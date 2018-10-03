@@ -35,6 +35,7 @@ class ExActLearner(object):
         self.seed = params['seed']
         self.tuning = params['tuning']
         self.one_point = params['one_point']
+        self.coord_descent = params['coord_descent']
 
         deltas_id = create_shared_noise.remote()
         self.deltas = SharedNoiseTable(ray.get(deltas_id), seed=self.seed+3)
@@ -105,8 +106,17 @@ class ExActLearner(object):
         if self.num_deltas > 1:
             rollout_rewards /= np.std(rollout_rewards)
 
+        delta_dim = None
+        delta_shape = None
+        if self.coord_descent:
+            delta_dim = self.action_size
+            delta_shape = (self.action_size,)
+        else:
+            delta_dim = self.action_size * self.rollout_length
+            delta_shape = (self.rollout_length, self.action_size)
+            
         g_hat, count = batched_weighted_sum_jacobian(rollout_rewards[:, 0] - rollout_rewards[:, 1],
-                                                     (self.deltas.get(idx, self.action_size * self.rollout_length).reshape(self.rollout_length, self.action_size) for idx in deltas_idx),
+                                                     (self.deltas.get(idx, delta_dim).reshape(delta_shape) for idx in deltas_idx),
                                                      obs,
                                                      batch_size=500)
 
