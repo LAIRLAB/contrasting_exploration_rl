@@ -17,7 +17,7 @@ args = parser.parse_args()
 params = vars(args)
 
 ars_filename = 'saved_data/ars_results_'+params['env_name']+'_'+ str(args.h_start) + '_' + str(args.h_end) + '_' + str(args.h_bin) +'.pkl'
-exact_filename = 'saved_data/exact_results_' + params['env_name']+'_'+ str(args.h_start) + '_' + str(args.h_end) + '_' + str(args.h_bin) +'.pkl'
+exact_filename = 'saved_data/exact_coord_results_' + params['env_name']+'_'+ str(args.h_start) + '_' + str(args.h_end) + '_' + str(args.h_bin) +'.pkl'
 
 horizons = list(range(args.h_start, args.h_end, args.h_bin))
 horizons_z = list(range(args.h_start_z, args.h_end_z, args.h_bin_z))
@@ -45,8 +45,8 @@ from mpl_toolkits.axes_grid1.inset_locator import zoomed_inset_axes
 zoom = None
 if args.env_name == 'Swimmer-v2':
     zoom = True
-elif args.env_name == 'HalfCheetah-v2':
-    zoom = False
+elif args.env_name == 'HalfCheetah-v2':    
+    zoom = True # False
 else:
     raise NotImplementedError
 if zoom:
