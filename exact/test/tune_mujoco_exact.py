@@ -38,14 +38,14 @@ def main():
 
     if params['env_name'] == 'Swimmer-v2':
         # @swimmer
-        stepsizes = [5e-3, 8e-3, 1e-2, 1.5e-2, 2e-2]
+        stepsizes = [5e-3, 8e-3, 1e-2, 1.5e-2, 2e-2, 2.5e-2, 3e-2]
         directions = [5, 10, 20]
-        perturbations = [0.05, 0.1, 0.15, 0.2]
+        perturbations = [0.15, 0.2, 0.3, 0.5]
     elif params['env_name'] == 'HalfCheetah-v2':
         # @halfcheetah
-        stepsizes = [1e-4, 3e-4, 5e-4, 8e-4, 1e-3]
+        stepsizes = [1e-4, 3e-4, 5e-4, 8e-4, 1e-3, 2e-3, 3e-3]
         directions = [5, 10, 20]
-        perturbations = [0.05, 0.1, 0.15, 0.2]
+        perturbations = [0.15, 0.2, 0.3, 0.5]
     else:
         raise NotImplementedError
     
