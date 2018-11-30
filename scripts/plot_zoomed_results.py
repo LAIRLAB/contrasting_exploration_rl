@@ -81,7 +81,7 @@ ax.set_ylabel('Mean Return')
 
 ax.legend(loc='lower right')
 
-title = 'Plot of Mean Return vs Horizon Length H for '+str(params['env_name'])
+title = 'Plot of Mean Return vs Horizon Length H \n for '+str(params['env_name'])
 ax.set_title(title)
 
 plt.gcf().set_size_inches([11.16, 8.26])
