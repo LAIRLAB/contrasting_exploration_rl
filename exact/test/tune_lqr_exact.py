@@ -51,7 +51,7 @@ def main():
     perturbations = [0.01, 0.05, 0.1]
 
     # horizons = list(range(args.h_start, args.h_end, args.h_bin))
-    noise_cov = [1e-4, 5e-4, 1e-3, 3e-3, 5e-3, 7e-3, 1e-2, 3e-2, 5e-2]
+    noise_cov = [1e-4, 5e-4, 1e-3, 3e-3, 5e-3, 7e-3, 1e-2, 3e-2, 5e-2, 7e-2, 1e-1]
 
     initial_seed = 100
     np.random.seed(params['seed'])
