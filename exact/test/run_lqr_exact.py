@@ -26,6 +26,7 @@ def main():
     parser.add_argument('--tuning', action='store_true')
     parser.add_argument('--max_num_steps', type=float, default=1e6)
     parser.add_argument('--non_stationary', action='store_true')
+    parser.add_argument('--coord_descent', action='store_true')
     # horizon parameters
     # parser.add_argument('--h_start', type=int, default=1)
     # parser.add_argument('--h_end', type=int, default=302)
@@ -38,6 +39,7 @@ def main():
     params = vars(args)
 
     params['one_point'] = True
+    params['coord_descent'] = True
 
     ray.init()
 
