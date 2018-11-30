@@ -3,6 +3,9 @@ import argparse
 import numpy as np
 import pickle
 
+# EDIT: Increase font size according to reviwer's comments
+plt.rcParams.update({'font.size': 25})
+
 parser = argparse.ArgumentParser()
 
 args = parser.parse_args()
@@ -11,7 +14,7 @@ params = vars(args)
 ars_filename = 'saved_data/ars_results_lqr.pkl'
 exact_filename = 'saved_data/exact_results_lqr.pkl'
 
-noise_cov = [1e-4, 5e-4, 1e-3, 5e-3, 1e-2, 5e-2, 1e-1, 5e-1]
+noise_cov = [1e-4, 5e-4, 1e-3, 3e-3, 5e-3, 7e-3, 1e-2, 3e-2, 5e-2]# , 7e-2, 1e-1]
 
 
 ars_results = pickle.load(open(ars_filename, 'rb'))
@@ -42,10 +45,12 @@ plt.fill_between(noise_cov, np.maximum(0, mean_exact - std_exact), np.minimum(1e
 plt.xscale('log')
 plt.yscale('linear')
 plt.xlabel('Standard deviation of the noise in LQR dynamics')
-plt.ylabel('Number of samples needed (in multiples of $10^4$)')
-plt.title('Plot of number of samples needed vs standard deviation \nof noise in LQR dynamics')
+plt.ylabel('Number of samples (multiples of $10^4$)')
+plt.title('Plot of number of samples vs std dev \nof noise in LQR dynamics')
 
 plt.legend()
+
+plt.gcf().set_size_inches([11.16, 8.26])
 
 filename = 'plt_lqr'
 plt.savefig('plot/'+filename+'.pdf', format='pdf')
