@@ -7,7 +7,7 @@ import pickle
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--env_name', type=str, default='LQR')
-    parser.add_argument('--ob_dim', type=int, default=100)
+    parser.add_argument('--ob_dim', type=int, default=10)
     parser.add_argument('--ac_dim', type=int, default=1)
     parser.add_argument('--n_iter', '-n', type=int, default=1000)
     parser.add_argument('--n_directions', '-nd', type=int, default=10)
@@ -47,7 +47,7 @@ def main():
     perturbations = [0.01, 0.05, 0.1]
 
     # horizons = list(range(args.h_start, args.h_end, args.h_bin))
-    noise_cov = [1e-4, 5e-4, 1e-3, 5e-3, 1e-2, 5e-2, 1e-1, 5e-1]
+    noise_cov = [1e-4, 5e-4, 1e-3, 3e-3, 5e-3, 7e-3, 1e-2, 3e-2, 5e-2]
 
     initial_seed = 100
     np.random.seed(params['seed'])
