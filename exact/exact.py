@@ -1,3 +1,9 @@
+'''
+ExAct algorithm
+Author: Anirudh Vemula
+
+Code is adapted from https://github.com/modestyachts/ARS/
+'''
 import numpy as np
 import ray
 import os

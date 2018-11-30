@@ -3,6 +3,9 @@ import argparse
 import numpy as np
 import pickle
 
+# EDIT: Increase font size according to reviwer's comments
+plt.rcParams.update({'font.size': 25})
+
 parser = argparse.ArgumentParser()
 
 parser.add_argument('--env_name', type=str, default='Swimmer-v2')
@@ -80,6 +83,8 @@ ax.legend(loc='lower right')
 
 title = 'Plot of Mean Return vs Horizon Length H for '+str(params['env_name'])
 ax.set_title(title)
+
+plt.gcf().set_size_inches([11.16, 8.26])
 
 filename = 'plt_'+str(params['env_name'])+'.pdf'
 plt.savefig('plot/'+filename, format='pdf')
