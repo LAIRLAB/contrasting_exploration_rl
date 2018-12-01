@@ -26,7 +26,6 @@ def main():
     parser.add_argument('--tuning', action='store_true')
     parser.add_argument('--max_num_steps', type=float, default=1e6)
     parser.add_argument('--non_stationary', action='store_true')
-    parser.add_argument('--coord_descent', action='store_true')
     # horizon parameters
     # parser.add_argument('--h_start', type=int, default=1)
     # parser.add_argument('--h_end', type=int, default=302)
@@ -39,7 +38,6 @@ def main():
     params = vars(args)
 
     params['one_point'] = True
-    params['coord_descent'] = True
 
     ray.init()
 
@@ -52,7 +50,7 @@ def main():
     test_param_seed = list(np.random.randint(low=1, high=1e8, size=num_random_seeds))
 
     # horizons = list(range(args.h_start, args.h_end, args.h_bin))
-    noise_cov = [1e-4, 5e-4, 1e-3, 3e-3, 5e-3, 7e-3, 1e-2, 3e-2, 5e-2, 7e-2, 1e-1]
+    noise_cov = [1e-4, 5e-4, 1e-3, 5e-3, 1e-2, 5e-2, 1e-1, 5e-1]
 
     # ss = [0.01 for _ in range(len(horizons))]
     # nd = ntd = [1 for _ in range(len(horizons))]
