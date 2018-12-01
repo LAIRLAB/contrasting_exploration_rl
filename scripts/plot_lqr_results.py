@@ -14,7 +14,7 @@ params = vars(args)
 ars_filename = 'saved_data/ars_results_lqr.pkl'
 exact_filename = 'saved_data/exact_results_lqr.pkl'
 
-noise_cov = [1e-4, 5e-4, 1e-3, 3e-3, 5e-3, 7e-3, 1e-2, 3e-2, 5e-2]# , 7e-2, 1e-1]
+noise_cov = [1e-4, 5e-4, 1e-3, 3e-3, 5e-3, 7e-3, 1e-2, 3e-2, 5e-2 , 7e-2, 1e-1]
 
 
 ars_results = pickle.load(open(ars_filename, 'rb'))
