@@ -24,14 +24,14 @@ def main():
     parser.add_argument('--filter', type=str, default='NoFilter')
     parser.add_argument('--one_point', action='store_true')
     parser.add_argument('--tuning', action='store_true')
-    parser.add_argument('--max_num_steps', type=float, default=1e5)
+    parser.add_argument('--max_num_steps', type=float, default=1e6)
     parser.add_argument('--non_stationary', action='store_true')
     # horizon parameters
     # parser.add_argument('--h_start', type=int, default=1)
     # parser.add_argument('--h_end', type=int, default=302)
     # parser.add_argument('--h_bin', type=int, default=20)
     # tuning parameters
-    parser.add_argument('--num_random_seeds', type=int, default=5)
+    parser.add_argument('--num_random_seeds', type=int, default=3)
     # Convergence parameters
     parser.add_argument('--epsilon', type=float, default=5e-2)
     parser.add_argument('--noise_cov', type=float, default=0.01)
@@ -47,7 +47,7 @@ def main():
     perturbations = [0.01, 0.05, 0.1]
 
     # horizons = list(range(args.h_start, args.h_end, args.h_bin))
-    noise_cov = [1e-4, 5e-4, 1e-3, 3e-3, 5e-3, 7e-3, 1e-2, 3e-2, 5e-2, 7e-2, 1e-1]
+    noise_cov = [1e-4, 5e-4, 1e-3, 5e-3, 1e-2, 5e-2, 1e-1, 5e-1]
 
     initial_seed = 100
     np.random.seed(params['seed'])
