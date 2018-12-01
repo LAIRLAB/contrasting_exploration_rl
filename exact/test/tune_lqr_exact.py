@@ -7,7 +7,7 @@ import pickle
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--env_name', type=str, default='LQR')
-    parser.add_argument('--ob_dim', type=int, default=50)
+    parser.add_argument('--ob_dim', type=int, default=100)
     parser.add_argument('--ac_dim', type=int, default=1)
     parser.add_argument('--n_iter', '-n', type=int, default=1000)
     parser.add_argument('--n_directions', '-nd', type=int, default=10)
@@ -24,7 +24,7 @@ def main():
     parser.add_argument('--filter', type=str, default='NoFilter')
     parser.add_argument('--one_point', action='store_true')
     parser.add_argument('--tuning', action='store_true')
-    parser.add_argument('--max_num_steps', type=float, default=1e6)
+    parser.add_argument('--max_num_steps', type=float, default=1e5)
     parser.add_argument('--non_stationary', action='store_true')
     parser.add_argument('--coord_descent', action='store_true')
     # horizon parameters
@@ -32,7 +32,7 @@ def main():
     # parser.add_argument('--h_end', type=int, default=302)
     # parser.add_argument('--h_bin', type=int, default=20)
     # tuning parameters
-    parser.add_argument('--num_random_seeds', type=int, default=3)
+    parser.add_argument('--num_random_seeds', type=int, default=5)
     # Convergence parameters
     parser.add_argument('--epsilon', type=float, default=5e-2)
     parser.add_argument('--noise_cov', type=float, default=0.01)

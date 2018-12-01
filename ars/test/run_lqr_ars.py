@@ -7,7 +7,7 @@ import pickle
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--env_name', type=str, default='LQR')
-    parser.add_argument('--ob_dim', type=int, default=50)
+    parser.add_argument('--ob_dim', type=int, default=100)
     parser.add_argument('--ac_dim', type=int, default=1)
     parser.add_argument('--n_iter', '-n', type=int, default=1000)
     parser.add_argument('--n_directions', '-nd', type=int, default=10)
