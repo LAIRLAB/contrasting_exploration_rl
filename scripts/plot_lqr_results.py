@@ -14,7 +14,7 @@ params = vars(args)
 ars_filename = 'saved_data/ars_results_lqr.pkl'
 exact_filename = 'saved_data/exact_results_lqr.pkl'
 
-noise_cov = [1e-4, 5e-4, 1e-3, 3e-3, 5e-3, 7e-3, 1e-2, 3e-2, 5e-2 , 7e-2, 1e-1]
+noise_cov = [1e-4, 5e-4, 1e-3, 5e-3, 1e-2, 5e-2, 1e-1, 5e-1]
 
 
 ars_results = pickle.load(open(ars_filename, 'rb'))
@@ -40,7 +40,7 @@ plt.plot(noise_cov, mean_ars, color='red', label='ARS', linewidth=2)
 plt.fill_between(noise_cov, np.maximum(0, mean_ars - std_ars), np.minimum(1e6, mean_ars + std_ars), facecolor='red', alpha=0.2)
 
 plt.plot(noise_cov, mean_exact, color='blue', label='ExAct', linewidth=2)
-plt.fill_between(noise_cov, np.maximum(0, mean_exact - std_exact), np.minimum(1e6, mean_exact + std_exact), facecolor='red', alpha=0.2)
+plt.fill_between(noise_cov, np.maximum(0, mean_exact - std_exact), np.minimum(1e6, mean_exact + std_exact), facecolor='blue', alpha=0.2)
 
 plt.xscale('log')
 plt.yscale('linear')
