@@ -15,12 +15,18 @@ parser.add_argument('--h_bin', type=int, default=1)
 parser.add_argument('--h_start_z', type=int, default=1)
 parser.add_argument('--h_end_z', type=int, default=6)
 parser.add_argument('--h_bin_z', type=int, default=1)
+parser.add_argument('--saved', action='store_true')
 
 args = parser.parse_args()
 params = vars(args)
 
-ars_filename = 'saved_data/ars_results_'+params['env_name']+'_'+ str(args.h_start) + '_' + str(args.h_end) + '_' + str(args.h_bin) +'.pkl'
-exact_filename = 'saved_data/exact_coord_results_' + params['env_name']+'_'+ str(args.h_start) + '_' + str(args.h_end) + '_' + str(args.h_bin) +'.pkl'
+if params['saved']:
+    directory = 'saved_data'
+else:
+    directory = 'data'
+
+ars_filename = directory+'/ars_results_'+params['env_name']+'_'+ str(args.h_start) + '_' + str(args.h_end) + '_' + str(args.h_bin) +'.pkl'
+exact_filename = directory+'/exact_results_' + params['env_name']+'_'+ str(args.h_start) + '_' + str(args.h_end) + '_' + str(args.h_bin) +'.pkl'
 
 horizons = list(range(args.h_start, args.h_end, args.h_bin))
 horizons_z = list(range(args.h_start_z, args.h_end_z, args.h_bin_z))
@@ -61,11 +67,6 @@ if zoom:
 
     axins.plot(horizons_z, mean_exact[:num_z], color='blue', label='ExAct', linewidth=2)
     axins.fill_between(horizons_z, mean_exact[:num_z] - std_exact[:num_z], mean_exact[:num_z] + std_exact[:num_z], facecolor='blue', alpha=0.2)
-
-#x1, x2, y1, y2 = 1, 5, 0, 5
-#axins.set_xlim(x1, x2)
-#axins.set_ylim(y1, y2)
-
 
 if zoom:
     axins.set_ylim(0, 2)

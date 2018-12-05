@@ -7,12 +7,18 @@ import pickle
 plt.rcParams.update({'font.size': 25})
 
 parser = argparse.ArgumentParser()
+parser.add_argument('--saved', action='store_true')
 
 args = parser.parse_args()
 params = vars(args)
 
-ars_filename = 'saved_data/ars_results_lqr.pkl'
-exact_filename = 'saved_data/exact_results_lqr.pkl'
+if params['saved']:
+    directory = 'saved_data'
+else:
+    directory = 'data'
+
+ars_filename = directory+'/ars_results_lqr.pkl'
+exact_filename =  directory+'/exact_results_lqr.pkl'
 
 noise_cov = [1e-4, 5e-4, 1e-3, 5e-3, 1e-2, 5e-2, 1e-1, 5e-1]
 

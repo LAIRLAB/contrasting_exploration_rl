@@ -7,14 +7,20 @@ parser = argparse.ArgumentParser()
 
 parser.add_argument('--env_name', type=str, default='Swimmer-v2')
 parser.add_argument('--h_start', type=int, default=1)
-parser.add_argument('--h_end', type=int, default=11)
+parser.add_argument('--h_end', type=int, default=16)
 parser.add_argument('--h_bin', type=int, default=1)
+parser.add_argument('--saved', action='store_true')
 
 args = parser.parse_args()
 params = vars(args)
 
-ars_filename = 'data/ars_results_'+params['env_name']+'_'+ str(args.h_start) + '_' + str(args.h_end) + '_' + str(args.h_bin) +'.pkl'
-exact_filename = 'data/exact_results_' + params['env_name']+'_'+ str(args.h_start) + '_' + str(args.h_end) + '_' + str(args.h_bin) +'.pkl'
+if params['saved']:
+    directory = 'saved_data'
+else:
+    directory = 'data'
+
+ars_filename = directory+'/ars_results_'+params['env_name']+'_'+ str(args.h_start) + '_' + str(args.h_end) + '_' + str(args.h_bin) +'.pkl'
+exact_filename = directory+'/exact_results_' + params['env_name']+'_'+ str(args.h_start) + '_' + str(args.h_end) + '_' + str(args.h_bin) +'.pkl'
 
 horizons = list(range(args.h_start, args.h_end, args.h_bin))
 
