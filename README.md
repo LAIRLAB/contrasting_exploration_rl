@@ -26,6 +26,15 @@ To reproduce the results of the LQR experiments with hyperparameter tuning, run
 ./scripts/run_lqr_experiments.sh
 ```
 
+### Generating Plots
+
+To generate plots used in the paper, run the following commands after running the experiments
+
+``` shell
+python scripts/plot_zooomed_results.py
+python scripts/plot_lqr_results.py
+```
+
 ## Dependencies
 * Python 3.6.3
 * Ray 0.5.2
