@@ -1,5 +1,11 @@
 # Contrasting Exploration in Parameter and Action Space
 
+## Citation
+
+If you use this code, please cite the following paper
+
+> Anirudh Vemula, Wen Sun, J. Andrew Bagnell. **Contrasting Exploration in Parameter and Action Space**. *In the proceedings of Artificial Intelligence and Statistics (AISTATS). 2019*
+
 ## Reproducing Experiments
 
 ### Setup
